@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "JFLib",
+        "repositoryURL": "https://github.com/joshfreed/JFLib",
+        "state": {
+          "branch": "main",
+          "revision": "80f7686525a09cc1e32d76466ffbc4610a208a65",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}
