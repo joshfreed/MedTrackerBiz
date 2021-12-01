@@ -9,17 +9,16 @@ let package = Package(
     products: [
         .library(
             name: "MedTrackerBiz",
-            targets: ["Medication"]),
+            targets: ["MedicationApp"]),
     ],
-    dependencies: [
-        .package(name: "JFLib", url: "https://github.com/joshfreed/JFLib", .branch("main"))
-    ],
+    dependencies: [],
     targets: [
         .target(
-            name: "Medication",
-            dependencies: []),
+            name: "MedicationApp",
+            dependencies: [],
+            path: "Sources/Medication"),
         .testTarget(
             name: "MedicationTests",
-            dependencies: ["Medication"]),
+            dependencies: ["MedicationApp"]),
     ]
 )

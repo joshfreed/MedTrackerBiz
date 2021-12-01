@@ -1,7 +1,7 @@
 import XCTest
-@testable import Medication
+@testable import MedicationApp
 
-class GetDailyScheduleUseCaseTests: XCTestCase {
+class GetTrackedMedicationsUseCaseTests: XCTestCase {
     var sut: MedicationService!
     let medications = MockMedications()
 

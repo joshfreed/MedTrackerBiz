@@ -1,10 +1,10 @@
 import Foundation
 
-struct Medication: Equatable, Codable {
+public struct Medication: Equatable, Codable {
     let id: MedicationId
     private(set) var name: String
 
-    init(name: String) {
+    public init(name: String) {
         self.id = MedicationId()
         self.name = name
     }
@@ -14,7 +14,7 @@ struct Medication: Equatable, Codable {
         self.name = name
     }
 
-    static func == (lhs: Medication, rhs: Medication) -> Bool {
+    public static func == (lhs: Medication, rhs: Medication) -> Bool {
         lhs.id == rhs.id
     }
 }

@@ -1,5 +1,5 @@
 import Foundation
 
-protocol Medications {
+public protocol MedicationRepository {
     func getAll() async throws -> [Medication]
 }

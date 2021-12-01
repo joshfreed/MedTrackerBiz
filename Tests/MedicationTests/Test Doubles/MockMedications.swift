@@ -1,7 +1,7 @@
 import Foundation
-@testable import Medication
+@testable import MedicationApp
 
-class MockMedications: Medications {
+class MockMedications: MedicationRepository {
     var medications: [Medication] = []
 
     func getAll() async throws -> [Medication] {
