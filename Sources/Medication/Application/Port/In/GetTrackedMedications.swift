@@ -1,7 +1,11 @@
 import Foundation
 
 public struct GetTrackedMedicationsQuery {
-    public init() {}
+    public let date: Date
+
+    public init(date: Date = Date()) {
+        self.date = date
+    }
 }
 
 public struct GetTrackedMedicationsResponse {

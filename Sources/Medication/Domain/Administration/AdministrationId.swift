@@ -1,6 +1,6 @@
 import Foundation
 
-public struct MedicationId: Equatable, Codable, Hashable {
+public struct AdministrationId: Equatable, Codable {
     private let uuid: UUID
 
     public init() {
@@ -13,6 +13,6 @@ public struct MedicationId: Equatable, Codable, Hashable {
     }
 }
 
-extension MedicationId: CustomStringConvertible {
+extension AdministrationId: CustomStringConvertible {
     public var description: String { uuid.uuidString }
 }
