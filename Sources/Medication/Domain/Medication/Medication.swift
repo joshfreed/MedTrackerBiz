@@ -1,7 +1,7 @@
 import Foundation
 
 public struct Medication: Equatable, Codable {
-    let id: MedicationId
+    public let id: MedicationId
     private(set) var name: String
 
     public init(name: String) {
