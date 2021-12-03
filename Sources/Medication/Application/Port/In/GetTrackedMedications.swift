@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 
 public struct GetTrackedMedicationsQuery {
     public let date: Date
@@ -30,4 +31,8 @@ public struct GetTrackedMedicationsResponse {
 
 public protocol GetTrackedMedicationsUseCase {
     func handle(_ query: GetTrackedMedicationsQuery) async throws -> GetTrackedMedicationsResponse
+}
+
+public protocol GetTrackedMedicationsContinuousQuery {
+    func subscribe(_ query: GetTrackedMedicationsQuery) -> AnyPublisher<GetTrackedMedicationsResponse, Error>
 }

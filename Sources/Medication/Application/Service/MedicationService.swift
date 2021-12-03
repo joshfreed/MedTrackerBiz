@@ -1,22 +1,52 @@
 import Foundation
+import Combine
 
 public class MedicationService {
     private let medications: MedicationRepository
     private let administrations: AdministrationRepository
+    private var getTrackedMedicationsSubject = CurrentValueSubject<GetTrackedMedicationsResponse?, Error>(nil)
 
     public init(medications: MedicationRepository, administrations: AdministrationRepository) {
         self.medications = medications
         self.administrations = administrations
     }
+
+    private func publishCurrentValue(of query: GetTrackedMedicationsQuery) {
+        Task {
+            do {
+                let response = try await handle(query)
+                getTrackedMedicationsSubject.send(response)
+            } catch {
+                getTrackedMedicationsSubject.send(completion: .failure(error))
+            }
+        }
+    }
 }
+
+// MARK: - TrackMedicationUseCase
 
 extension MedicationService: TrackMedicationUseCase {
     public func handle(_ command: TrackMedicationCommand) async throws {
         let medication = Medication(name: command.name)
         try await medications.add(medication)
         try await medications.save()
+        publishCurrentValue(of: GetTrackedMedicationsQuery(date: Date.current))
     }
 }
+
+// MARK: - GetTrackedMedicationsContinuousQuery
+
+extension MedicationService: GetTrackedMedicationsContinuousQuery {
+    public func subscribe(_ query: GetTrackedMedicationsQuery) -> AnyPublisher<GetTrackedMedicationsResponse, Error> {
+        if getTrackedMedicationsSubject.value == nil {
+            publishCurrentValue(of: query)
+        }
+
+        return getTrackedMedicationsSubject.compactMap { $0 }.eraseToAnyPublisher()
+    }
+}
+
+// MARK: - GetTrackedMedicationsUseCase
 
 extension MedicationService: GetTrackedMedicationsUseCase {
     public func handle(_ query: GetTrackedMedicationsQuery) async throws -> GetTrackedMedicationsResponse {
@@ -41,6 +71,8 @@ extension MedicationService: GetTrackedMedicationsUseCase {
     }
 }
 
+// MARK: - RecordAdministrationUseCase
+
 extension MedicationService: RecordAdministrationUseCase {
     public func handle(_ command: RecordAdministrationCommand) async throws {
         guard let medicationId = MedicationId(uuidString: command.medicationId) else {
@@ -55,5 +87,7 @@ extension MedicationService: RecordAdministrationUseCase {
 
         try await administrations.add(administration)
         try await administrations.save()
+
+        publishCurrentValue(of: GetTrackedMedicationsQuery(date: Date.current))
     }
 }
