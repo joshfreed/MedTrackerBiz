@@ -1,7 +1,7 @@
 import Foundation
 
 public struct AdministrationId: Equatable, Codable {
-    private let uuid: UUID
+    public let uuid: UUID
 
     public init() {
         uuid = UUID()

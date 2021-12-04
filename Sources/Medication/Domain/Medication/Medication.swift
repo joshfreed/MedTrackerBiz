@@ -2,7 +2,7 @@ import Foundation
 
 public struct Medication: Equatable, Codable {
     public let id: MedicationId
-    private(set) var name: String
+    public private(set) var name: String
 
     public init(name: String) {
         self.id = MedicationId()

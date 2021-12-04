@@ -1,7 +1,7 @@
 import Foundation
 
 public struct MedicationId: Equatable, Codable, Hashable {
-    private let uuid: UUID
+    public let uuid: UUID
 
     public init() {
         uuid = UUID()

@@ -1,7 +1,7 @@
 import Foundation
 import JFLib_Date
 
-public class Administration: Equatable {
+public class Administration: Equatable, Codable {
     public let id: AdministrationId
     public let medicationId: MedicationId
     public let administrationDate: Date
