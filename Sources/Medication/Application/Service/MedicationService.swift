@@ -52,7 +52,7 @@ extension MedicationService: GetTrackedMedicationsUseCase {
     public func handle(_ query: GetTrackedMedicationsQuery) async throws -> GetTrackedMedicationsResponse {
         let medications = try await medications.getAll()
         let responseMedications = try await map(models: medications, date: query.date)
-        return GetTrackedMedicationsResponse(medications: responseMedications)
+        return GetTrackedMedicationsResponse(date: query.date, medications: responseMedications)
     }
 
     private func map(models: [Medication], date: Date) async throws -> [GetTrackedMedicationsResponse.Medication] {

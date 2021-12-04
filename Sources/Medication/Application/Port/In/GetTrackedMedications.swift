@@ -10,9 +10,11 @@ public struct GetTrackedMedicationsQuery {
 }
 
 public struct GetTrackedMedicationsResponse {
+    public let date: Date
     public let medications: [Medication]
 
-    public init(medications: [Medication]) {
+    public init(date: Date, medications: [Medication]) {
+        self.date = date
         self.medications = medications
     }
 
