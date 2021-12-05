@@ -91,3 +91,26 @@ extension MedicationService: RecordAdministrationUseCase {
         publishCurrentValue(of: GetTrackedMedicationsQuery(date: Date.current))
     }
 }
+
+// MARK: - RemoveAdministrationUseCase
+
+extension MedicationService: RemoveAdministrationUseCase {
+    public func handle(_ command: RemoveAdministrationCommand) async throws {
+        guard let medicationId = MedicationId(uuidString: command.medicationId) else {
+            throw RemoveAdministrationError.invalidMedicationId
+        }
+
+        guard try await medications.getById(medicationId) != nil else {
+            throw RemoveAdministrationError.medicationNotFound
+        }
+
+        guard let administration = try await administrations.findBy(medicationId: medicationId, and: Date.current) else {
+            throw RemoveAdministrationError.administrationNotFound
+        }
+
+        try await administrations.remove(administration)
+        try await administrations.save()
+
+        publishCurrentValue(of: GetTrackedMedicationsQuery(date: Date.current))
+    }
+}

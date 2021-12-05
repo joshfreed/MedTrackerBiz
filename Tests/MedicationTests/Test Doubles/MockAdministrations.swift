@@ -16,16 +16,23 @@ class MockAdministrations: AdministrationRepository {
         XCTAssertTrue(added.contains(where: { $0.medicationId == medicationId }), file: file, line: line)
     }
 
-    // MARK: save
+    // MARK: findByMedicationIdAndDate
 
-    var saveWasCalled = false
+    var findByCalls: [MedIdDateKey: Administration] = [:]
 
-    func save() async throws {
-        saveWasCalled = true
+    struct MedIdDateKey: Hashable {
+        let medicationId: MedicationId
+        let date: Date
     }
 
-    func verify_save_wasCalled(file: StaticString = #filePath, line: UInt = #line) {
-        XCTAssertTrue(saveWasCalled, "save was not called", file: file, line: line)
+    func findBy(medicationId: MedicationId, and date: Date) async throws -> Administration? {
+        let key = MedIdDateKey(medicationId: medicationId, date: date)
+        return findByCalls[key]
+    }
+
+    func configure_findByMedicationAndDate_toReturn(_ administration: Administration, for medicationId: MedicationId, and date: Date) {
+        let key = MedIdDateKey(medicationId: medicationId, date: date)
+        findByCalls[key] = administration
     }
 
     // MARK: hasAdministration
@@ -45,5 +52,29 @@ class MockAdministrations: AdministrationRepository {
     func hasAdministration(on date: Date, for medicationId: MedicationId) async throws -> Bool {
         let key = HasAdministrationKey(date: date, medicationId: medicationId)
         return calls[key, default: false]
+    }
+
+    // MARK: remove
+
+    var removedAdministration: Administration?
+
+    func remove(_ administration: Administration) async throws {
+        removedAdministration = administration
+    }
+
+    func verify_remove_wasCalled(with administration: Administration, file: StaticString = #filePath, line: UInt = #line) {
+        XCTAssertEqual(removedAdministration, administration, "remove was not called w/ expected administration", file: file, line: line)
+    }
+
+    // MARK: save
+
+    var saveWasCalled = false
+
+    func save() async throws {
+        saveWasCalled = true
+    }
+
+    func verify_save_wasCalled(file: StaticString = #filePath, line: UInt = #line) {
+        XCTAssertTrue(saveWasCalled, "save was not called", file: file, line: line)
     }
 }

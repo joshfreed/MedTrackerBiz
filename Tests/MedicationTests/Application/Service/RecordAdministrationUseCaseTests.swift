@@ -24,7 +24,7 @@ class RecordAdministrationUseCaseTests: XCTestCase {
         administrations.verify_save_wasCalled()
     }
 
-    func test_invalid_medication_id_throws_badRequest() async {
+    func test_invalid_medication_id_throws_error() async {
         let medicationIdString = "ZZ2345FFF_not_a_uuid"
 
         do {
