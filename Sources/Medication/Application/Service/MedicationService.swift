@@ -82,11 +82,6 @@ extension MedicationService: GetTrackedMedicationsUseCase {
 
 extension MedicationService: RecordAdministrationUseCase {
     public func handle(_ command: RecordAdministrationCommand) async throws {
-        DomainEventPublisher.shared.subscribe(DomainEventSubscriber<AdministrationRecorded> { domainEvent in
-            self.shortcutDonation.donateInteraction(domainEvent: domainEvent)
-            self.publishCurrentValue(of: GetTrackedMedicationsQuery(date: Date.current))
-        })
-
         guard let medicationId = MedicationId(uuidString: command.medicationId) else {
             throw RecordAdministrationError.invalidMedicationId
         }
@@ -94,6 +89,25 @@ extension MedicationService: RecordAdministrationUseCase {
         guard let medication = try await medications.getById(medicationId) else {
             throw RecordAdministrationError.medicationNotFound
         }
+
+        try await recordAdministration(medication: medication)
+    }
+
+    public func handle(_ command: RecordAdministrationByNameCommand) async throws {
+        let medicationQuery = FindMedicationByName(medications: medications)
+
+        guard let medication = try await medicationQuery.findOne(named: command.medicationName) else {
+            throw RecordAdministrationError.medicationNotFound
+        }
+
+        try await recordAdministration(medication: medication)
+    }
+
+    private func recordAdministration(medication: Medication) async throws {
+        DomainEventPublisher.shared.subscribe(DomainEventSubscriber<AdministrationRecorded> { domainEvent in
+            self.shortcutDonation.donateInteraction(domainEvent: domainEvent)
+            self.publishCurrentValue(of: GetTrackedMedicationsQuery(date: Date.current))
+        })
 
         let administration = medication.recordAdministration(on: Date.current)
 
