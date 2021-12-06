@@ -11,7 +11,7 @@ class RemoveAdministrationUseCaseTests: XCTestCase {
     var cancellable: AnyCancellable?
 
     override func setUpWithError() throws {
-        sut = MedicationService(medications: medications, administrations: administrations)
+        sut = MedicationService.factory(medications: medications, administrations: administrations)
 
         Date.overrideCurrentDate(self.currentDate)
     }

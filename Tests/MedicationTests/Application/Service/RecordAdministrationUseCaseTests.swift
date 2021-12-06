@@ -1,13 +1,22 @@
 import XCTest
+@testable import JFLib_Testing
 @testable import MedicationApp
 
 class RecordAdministrationUseCaseTests: XCTestCase {
     var sut: RecordAdministrationUseCase!
     let administrations = MockAdministrations()
     let medications = MockMedications()
+    let donationService = MockDonationService()
+    let today = Date()
 
     override func setUpWithError() throws {
-        sut = MedicationService(medications: medications, administrations: administrations)
+        Date.overrideCurrentDate(self.today)
+
+        sut = MedicationService.factory(
+            medications: medications,
+            administrations: administrations,
+            shortcutDonation: donationService
+        )
     }
 
     func test_adds_new_administration_record_to_repository() async throws {
@@ -48,5 +57,21 @@ class RecordAdministrationUseCaseTests: XCTestCase {
         } catch {
             XCTFail("An unexpected error was thrown: \(error)")
         }
+    }
+
+    func test_donates_shortcut_on_success() async throws {
+        // Given
+        let medicationId = MedicationId()
+        let medication = Medication(id: medicationId, name: "My Medication")
+        medications.configure_getById_toReturn(medication, forId: medicationId)
+
+        // When
+        try await sut.handle(RecordAdministrationCommand(medicationId: String(describing: medicationId)))
+
+        // Then
+        let administrationId = administrations.added!.id
+        let expectedEvent = AdministrationRecorded(id: administrationId, medicationId: medicationId, administrationDate: Date.current)
+        donationService.verify_donateInteraction_wasCalled()
+        XCTAssertEqual(donationService.donatedDomainEvent as? AdministrationRecorded, expectedEvent)
     }
 }

@@ -6,14 +6,14 @@ class MockAdministrations: AdministrationRepository {
 
     // MARK: add
 
-    var added: [Administration] = []
+    var added: Administration?
 
     func add(_ administration: Administration) async throws {
-        added.append(administration)
+        added = administration
     }
 
     func verify_add_wasCalled(withAdministrationFor medicationId: MedicationId, file: StaticString = #filePath, line: UInt = #line) {
-        XCTAssertTrue(added.contains(where: { $0.medicationId == medicationId }), file: file, line: line)
+        XCTAssertTrue(added?.medicationId == medicationId, file: file, line: line)
     }
 
     // MARK: findByMedicationIdAndDate

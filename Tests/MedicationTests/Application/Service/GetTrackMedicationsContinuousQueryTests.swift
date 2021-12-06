@@ -14,7 +14,7 @@ class GetTrackMedicationsContinuousQueryTests: XCTestCase {
 
     override func setUpWithError() throws {
         continueAfterFailure = false
-        sut = MedicationService(medications: medications, administrations: administrations)
+        sut = MedicationService.factory(medications: medications, administrations: administrations)
     }
 
     func test_first_subscriptions_fetches_current_query_state() async throws {
@@ -88,6 +88,7 @@ class GetTrackMedicationsContinuousQueryTests: XCTestCase {
 
         cancellable = sut.subscribe(.init(date: today))
             .dropFirst() // ignores the initial fetch that happens on subscribe
+            .receive(on: RunLoop.main)
             .sink { completion in
                 XCTFail("Should not complete")
             } receiveValue: { response in

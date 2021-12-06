@@ -7,7 +7,7 @@ class TrackMedicationUseCaseTests: XCTestCase {
     let medications = MockMedications()
 
     override func setUpWithError() throws {
-        sut = MedicationService(medications: medications, administrations: administrations)
+        sut = MedicationService.factory(medications: medications, administrations: administrations)
     }
 
     func test_adds_new_medication_to_repository() async throws {

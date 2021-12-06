@@ -8,7 +8,7 @@ class GetTrackedMedicationsUseCaseTests: XCTestCase {
 
     override func setUpWithError() throws {
         continueAfterFailure = false
-        sut = MedicationService(medications: medications, administrations: administrations)
+        sut = MedicationService.factory(medications: medications, administrations: administrations)
     }
 
     func test_no_medications_returns_an_empty_list() async throws {

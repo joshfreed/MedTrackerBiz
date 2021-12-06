@@ -1,14 +1,21 @@
 import Foundation
 import Combine
+import JFLib_DomainEvents
 
 public class MedicationService {
     private let medications: MedicationRepository
     private let administrations: AdministrationRepository
+    private let shortcutDonation: ShortcutDonationService
     private var getTrackedMedicationsSubject = CurrentValueSubject<GetTrackedMedicationsResponse?, Error>(nil)
 
-    public init(medications: MedicationRepository, administrations: AdministrationRepository) {
+    public init(
+        medications: MedicationRepository,
+        administrations: AdministrationRepository,
+        shortcutDonation: ShortcutDonationService
+    ) {
         self.medications = medications
         self.administrations = administrations
+        self.shortcutDonation = shortcutDonation
     }
 
     private func publishCurrentValue(of query: GetTrackedMedicationsQuery) {
@@ -75,6 +82,11 @@ extension MedicationService: GetTrackedMedicationsUseCase {
 
 extension MedicationService: RecordAdministrationUseCase {
     public func handle(_ command: RecordAdministrationCommand) async throws {
+        DomainEventPublisher.shared.subscribe(DomainEventSubscriber<AdministrationRecorded> { domainEvent in
+            self.shortcutDonation.donateInteraction(domainEvent: domainEvent)
+            self.publishCurrentValue(of: GetTrackedMedicationsQuery(date: Date.current))
+        })
+
         guard let medicationId = MedicationId(uuidString: command.medicationId) else {
             throw RecordAdministrationError.invalidMedicationId
         }
@@ -88,7 +100,8 @@ extension MedicationService: RecordAdministrationUseCase {
         try await administrations.add(administration)
         try await administrations.save()
 
-        publishCurrentValue(of: GetTrackedMedicationsQuery(date: Date.current))
+        DomainEventPublisher.shared.publishPendingEvents()
+        DomainEventPublisher.shared.reset()
     }
 }
 
