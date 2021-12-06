@@ -1,8 +1,9 @@
 import Foundation
 import JFLib_DomainEvents
 
-struct AdministrationRecorded: DomainEvent, Equatable {
-    let id: AdministrationId
-    let medicationId: MedicationId
-    let administrationDate: Date
+public struct AdministrationRecorded: DomainEvent, Equatable {
+    public let id: AdministrationId
+    public let medicationId: MedicationId
+    public let administrationDate: Date
+    public let medicationName: String
 }

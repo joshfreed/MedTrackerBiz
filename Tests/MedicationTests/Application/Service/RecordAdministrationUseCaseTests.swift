@@ -70,7 +70,12 @@ class RecordAdministrationUseCaseTests: XCTestCase {
 
         // Then
         let administrationId = administrations.added!.id
-        let expectedEvent = AdministrationRecorded(id: administrationId, medicationId: medicationId, administrationDate: Date.current)
+        let expectedEvent = AdministrationRecorded(
+            id: administrationId,
+            medicationId: medicationId,
+            administrationDate: Date.current,
+            medicationName: medication.name
+        )
         donationService.verify_donateInteraction_wasCalled()
         XCTAssertEqual(donationService.donatedDomainEvent as? AdministrationRecorded, expectedEvent)
     }

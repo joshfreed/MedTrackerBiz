@@ -24,7 +24,8 @@ public struct Medication: Equatable, Codable {
         DomainEvents.add(AdministrationRecorded(
             id: administration.id,
             medicationId: id,
-            administrationDate: administration.administrationDate
+            administrationDate: administration.administrationDate,
+            medicationName: name
         ))
         return administration
     }
