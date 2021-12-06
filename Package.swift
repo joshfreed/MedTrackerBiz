@@ -18,7 +18,8 @@ let package = Package(
         .target(
             name: "MedicationApp",
             dependencies: [
-                .product(name: "JFLib.Date", package: "JFLib")
+                .product(name: "JFLib.Date", package: "JFLib"),
+                .product(name: "JFLib.DomainEvents", package: "JFLib"),
             ],
             path: "Sources/Medication"),
         .testTarget(

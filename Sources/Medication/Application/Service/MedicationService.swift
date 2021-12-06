@@ -79,11 +79,11 @@ extension MedicationService: RecordAdministrationUseCase {
             throw RecordAdministrationError.invalidMedicationId
         }
 
-        guard try await medications.getById(medicationId) != nil else {
+        guard let medication = try await medications.getById(medicationId) else {
             throw RecordAdministrationError.medicationNotFound
         }
 
-        let administration = Administration(medicationId: medicationId)
+        let administration = medication.recordAdministration(on: Date.current)
 
         try await administrations.add(administration)
         try await administrations.save()

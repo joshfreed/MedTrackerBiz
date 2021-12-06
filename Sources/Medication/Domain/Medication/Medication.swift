@@ -1,4 +1,5 @@
 import Foundation
+import JFLib_DomainEvents
 
 public struct Medication: Equatable, Codable {
     public let id: MedicationId
@@ -16,5 +17,15 @@ public struct Medication: Equatable, Codable {
 
     public static func == (lhs: Medication, rhs: Medication) -> Bool {
         lhs.id == rhs.id
+    }
+
+    func recordAdministration(on date: Date) -> Administration {
+        let administration = Administration(medicationId: id)
+        DomainEvents.add(AdministrationRecorded(
+            id: administration.id,
+            medicationId: id,
+            administrationDate: administration.administrationDate
+        ))
+        return administration
     }
 }
