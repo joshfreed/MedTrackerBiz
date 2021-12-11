@@ -116,6 +116,11 @@ extension MedicationService: RecordAdministrationUseCase {
             self.publishCurrentValue(of: GetTrackedMedicationsQuery(date: Date.current))
         })
 
+        let hasAdministration = try await administrations.hasAdministration(on: administrationDate, for: medication.id)
+        guard !hasAdministration else {
+            throw RecordAdministrationError.administrationAlreadyRecorded
+        }
+
         let administration = medication.recordAdministration(on: administrationDate)
 
         try await administrations.add(administration)

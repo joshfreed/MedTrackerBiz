@@ -79,4 +79,21 @@ class RecordAdministrationUseCaseTests: XCTestCase {
         donationService.verify_donateInteraction_wasCalled()
         XCTAssertEqual(donationService.donatedDomainEvent as? AdministrationRecorded, expectedEvent)
     }
+
+    func test_throws_an_error_if_an_administration_was_already_recorded_for_the_medication_today() async throws {
+        // Given
+        let medicationId = MedicationId()
+        let medication = Medication(id: medicationId, name: "My Medication")
+        medications.configure_getById_toReturn(medication, forId: medicationId)
+        administrations.configure_hasAdministration_toReturn(true, on: Date.current, for: medicationId)
+
+        do {
+            try await sut.handle(RecordAdministrationCommand(medicationId: String(describing: medicationId)))
+            XCTFail("Expected an error to be thrown")
+        } catch RecordAdministrationError.administrationAlreadyRecorded {
+            // Yay!
+        } catch {
+            XCTFail("An unexpected error was thrown: \(error)")
+        }
+    }
 }

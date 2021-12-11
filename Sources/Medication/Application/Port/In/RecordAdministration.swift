@@ -1,6 +1,6 @@
 import Foundation
 
-public struct RecordAdministrationCommand {
+public struct RecordAdministrationCommand: Equatable {
     public let medicationId: String
 
     public init(medicationId: String) {
@@ -8,7 +8,7 @@ public struct RecordAdministrationCommand {
     }
 }
 
-public struct RecordAdministrationByNameCommand {
+public struct RecordAdministrationByNameCommand: Equatable {
     public let medicationName: String
 
     public init(medicationName: String) {
@@ -24,4 +24,5 @@ public protocol RecordAdministrationUseCase {
 public enum RecordAdministrationError: Error {
     case invalidMedicationId
     case medicationNotFound
+    case administrationAlreadyRecorded
 }
