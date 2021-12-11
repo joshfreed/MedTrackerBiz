@@ -9,7 +9,7 @@ public struct GetTrackedMedicationsQuery {
     }
 }
 
-public struct GetTrackedMedicationsResponse {
+public struct GetTrackedMedicationsResponse: Equatable {
     public let date: Date
     public let medications: [Medication]
 
@@ -18,7 +18,7 @@ public struct GetTrackedMedicationsResponse {
         self.medications = medications
     }
 
-    public struct Medication {
+    public struct Medication: Equatable {
         public let id: String
         public let name: String
         public let wasAdministered: Bool

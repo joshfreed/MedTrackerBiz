@@ -38,6 +38,24 @@ class GetTrackMedicationsContinuousQueryTests: XCTestCase {
         XCTAssertTrue(initialValue!.medications[2].wasAdministered)
     }
 
+    func test_passing_a_different_date_starts_a_new_query() async throws {
+        // Given
+        let yesterday = Calendar.current.date(byAdding: .init(day: -1), to: today)!
+        medications.configure_getAll_toReturn([med1])
+        administrations.configure_hasAdministration_toReturn(true, on: yesterday, for: med1.id)
+        administrations.configure_hasAdministration_toReturn(false, on: today, for: med1.id)
+
+        let yesterdayValue = await subscribeToContinuousQuery(for: yesterday)
+        let todayValue = await subscribeToContinuousQuery(for: today)
+
+        // Then
+        XCTAssertNotNil(yesterdayValue)
+        XCTAssertNotNil(todayValue)
+        XCTAssertNotEqual(yesterdayValue, todayValue)
+        XCTAssertTrue(yesterdayValue!.medications[0].wasAdministered)
+        XCTAssertFalse(todayValue!.medications[0].wasAdministered)
+    }
+
     func test_trackMedicationUseCase_publishes_an_updated_query() async throws {
         // Given
         medications.configure_getAll_toReturn([med1])
@@ -65,12 +83,19 @@ class GetTrackMedicationsContinuousQueryTests: XCTestCase {
 
     // MARK: - Helpers
 
-    private func subscribeToContinuousQuery() async -> GetTrackedMedicationsResponse? {
+    private func subscribeToContinuousQuery(for date: Date? = nil) async -> GetTrackedMedicationsResponse? {
         let expectation = expectation(description: "current value")
 
         var initialValue: GetTrackedMedicationsResponse?
 
-        cancellable = sut.subscribe(.init(date: today))
+        var queryDate: Date
+        if let date = date {
+            queryDate = date
+        } else {
+            queryDate = today
+        }
+
+        cancellable = sut.subscribe(.init(date: queryDate))
             .sink { completion in
                 XCTFail("Should not complete")
             } receiveValue: { response in

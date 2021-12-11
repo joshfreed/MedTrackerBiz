@@ -6,7 +6,7 @@ public class MedicationService {
     private let medications: MedicationRepository
     private let administrations: AdministrationRepository
     private let shortcutDonation: ShortcutDonationService
-    private var getTrackedMedicationsSubject = CurrentValueSubject<GetTrackedMedicationsResponse?, Error>(nil)
+    private var getTrackedMedicationsSubjects: [DateOnly: CurrentValueSubject<GetTrackedMedicationsResponse?, Error>] = [:]
 
     public init(
         medications: MedicationRepository,
@@ -19,12 +19,13 @@ public class MedicationService {
     }
 
     private func publishCurrentValue(of query: GetTrackedMedicationsQuery) {
+        let subject = getTrackedMedicationsSubjects[query.date.dateOnly()]
         Task {
             do {
                 let response = try await handle(query)
-                getTrackedMedicationsSubject.send(response)
+                subject?.send(response)
             } catch {
-                getTrackedMedicationsSubject.send(completion: .failure(error))
+                subject?.send(completion: .failure(error))
             }
         }
     }
@@ -45,11 +46,17 @@ extension MedicationService: TrackMedicationUseCase {
 
 extension MedicationService: GetTrackedMedicationsContinuousQuery {
     public func subscribe(_ query: GetTrackedMedicationsQuery) -> AnyPublisher<GetTrackedMedicationsResponse, Error> {
-        if getTrackedMedicationsSubject.value == nil {
+        var subject: CurrentValueSubject<GetTrackedMedicationsResponse?, Error>
+
+        if let existingSubject = getTrackedMedicationsSubjects[query.date.dateOnly()] {
+            subject = existingSubject
+        } else {
+            subject = CurrentValueSubject<GetTrackedMedicationsResponse?, Error>(nil)
+            getTrackedMedicationsSubjects[query.date.dateOnly()] = subject
             publishCurrentValue(of: query)
         }
 
-        return getTrackedMedicationsSubject.compactMap { $0 }.eraseToAnyPublisher()
+        return subject.compactMap { $0 }.eraseToAnyPublisher()
     }
 }
 
@@ -90,7 +97,7 @@ extension MedicationService: RecordAdministrationUseCase {
             throw RecordAdministrationError.medicationNotFound
         }
 
-        try await recordAdministration(medication: medication)
+        try await recordAdministration(medication: medication, administrationDate: Date.current)
     }
 
     public func handle(_ command: RecordAdministrationByNameCommand) async throws {
@@ -100,16 +107,16 @@ extension MedicationService: RecordAdministrationUseCase {
             throw RecordAdministrationError.medicationNotFound
         }
 
-        try await recordAdministration(medication: medication)
+        try await recordAdministration(medication: medication, administrationDate: Date.current)
     }
 
-    private func recordAdministration(medication: Medication) async throws {
+    private func recordAdministration(medication: Medication, administrationDate: Date) async throws {
         DomainEventPublisher.shared.subscribe(DomainEventSubscriber<AdministrationRecorded> { domainEvent in
             self.shortcutDonation.donateInteraction(domainEvent: domainEvent)
             self.publishCurrentValue(of: GetTrackedMedicationsQuery(date: Date.current))
         })
 
-        let administration = medication.recordAdministration(on: Date.current)
+        let administration = medication.recordAdministration(on: administrationDate)
 
         try await administrations.add(administration)
         try await administrations.save()
