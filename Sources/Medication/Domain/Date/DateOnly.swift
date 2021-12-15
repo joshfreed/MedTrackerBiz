@@ -5,22 +5,19 @@ struct DateOnly: Equatable, Hashable, Codable {
     let day: Int
     let year: Int
 
-    init(month: Int, day: Int, year: Int) {
-        self.month = month
-        self.day = day
-        self.year = year
+    init(date: Date, calendar: Calendar = Calendar.current) {
+        year = calendar.component(.year, from: date)
+        month = calendar.component(.month, from: date)
+        day = calendar.component(.day, from: date)
     }
 
-    init(date: Date, calendar: Calendar = Calendar.current) {
-        let year = calendar.component(.year, from: date)
-        let month = calendar.component(.month, from: date)
-        let day = calendar.component(.day, from: date)
-        self.init(month: month, day: day, year: year)
+    func date(calendar: Calendar = Calendar.current) -> Date {
+        calendar.date(from: .init(year: year, month: month, day: day))!
     }
 }
 
 extension Date {
-    func dateOnly() -> DateOnly {
-        DateOnly(date: self)
+    func dateOnly(calendar: Calendar = Calendar.current) -> DateOnly {
+        DateOnly(date: self, calendar: calendar)
     }
 }

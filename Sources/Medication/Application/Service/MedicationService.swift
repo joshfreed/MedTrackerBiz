@@ -18,6 +18,14 @@ public class MedicationService {
         self.shortcutDonation = shortcutDonation
     }
 
+    /// Publishes the current value of all `GetTrackedMedicationsContinuousQuery` that have been subscribed
+    public func refreshContinuousQueries() {
+        getTrackedMedicationsSubjects.keys.forEach { dateOnly in
+            let date = dateOnly.date()
+            publishCurrentValue(of: .init(date: date))
+        }
+    }
+
     private func publishCurrentValue(of query: GetTrackedMedicationsQuery) {
         let subject = getTrackedMedicationsSubjects[query.date.dateOnly()]
         Task {
