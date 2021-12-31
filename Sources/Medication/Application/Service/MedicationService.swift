@@ -6,16 +6,19 @@ public class MedicationService {
     private let medications: MedicationRepository
     private let administrations: AdministrationRepository
     private let shortcutDonation: ShortcutDonationService
+    private let widgetService: WidgetService
     private var getTrackedMedicationsSubjects: [DateOnly: CurrentValueSubject<GetTrackedMedicationsResponse?, Error>] = [:]
 
     public init(
         medications: MedicationRepository,
         administrations: AdministrationRepository,
-        shortcutDonation: ShortcutDonationService
+        shortcutDonation: ShortcutDonationService,
+        widgetService: WidgetService
     ) {
         self.medications = medications
         self.administrations = administrations
         self.shortcutDonation = shortcutDonation
+        self.widgetService = widgetService
     }
 
     /// Publishes the current value of all `GetTrackedMedicationsContinuousQuery` that have been subscribed
@@ -47,6 +50,7 @@ extension MedicationService: TrackMedicationUseCase {
         try await medications.add(medication)
         try await medications.save()
         publishCurrentValue(of: GetTrackedMedicationsQuery(date: Date.current))
+        widgetService.reloadWidget()
     }
 }
 
@@ -122,6 +126,7 @@ extension MedicationService: RecordAdministrationUseCase {
         DomainEventPublisher.shared.subscribe(DomainEventSubscriber<AdministrationRecorded> { domainEvent in
             self.shortcutDonation.donateInteraction(domainEvent: domainEvent)
             self.publishCurrentValue(of: GetTrackedMedicationsQuery(date: Date.current))
+            self.widgetService.reloadWidget()
         })
 
         let hasAdministration = try await administrations.hasAdministration(on: administrationDate, for: medication.id)
@@ -159,5 +164,6 @@ extension MedicationService: RemoveAdministrationUseCase {
         try await administrations.save()
 
         publishCurrentValue(of: GetTrackedMedicationsQuery(date: Date.current))
+        widgetService.reloadWidget()
     }
 }
