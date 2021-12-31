@@ -8,9 +8,9 @@ class GetTrackMedicationsContinuousQueryTests: XCTestCase {
     let administrations = MockAdministrations()
     var cancellable: AnyCancellable?
     let today = Date()
-    let med1 = Medication(name: "Testaprexin")
-    let med2 = Medication(name: "Allegra")
-    let med3 = Medication(name: "Beezlepill")
+    let med1 = MedicationBuilder.aMedication().with(name: "Testaprexin").build()
+    let med2 = MedicationBuilder.aMedication().with(name: "Allegra").build()
+    let med3 = MedicationBuilder.aMedication().with(name: "Beezlepill").build()
 
     override func setUpWithError() throws {
         continueAfterFailure = false
@@ -62,7 +62,7 @@ class GetTrackMedicationsContinuousQueryTests: XCTestCase {
         expectQueryToPublishNewValue()
 
         // When
-        try await sut.handle(TrackMedicationCommand(name: "My New Med"))
+        try await sut.handle(TrackMedicationCommand(name: "My New Med", administrationTime: 11))
 
         // Then
         await waitForExpectations(timeout: 5)

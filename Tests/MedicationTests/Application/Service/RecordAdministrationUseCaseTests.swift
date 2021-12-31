@@ -21,15 +21,14 @@ class RecordAdministrationUseCaseTests: XCTestCase {
 
     func test_adds_new_administration_record_to_repository() async throws {
         // Given
-        let medicationId = MedicationId()
-        let medication = Medication(id: medicationId, name: "My Medication")
-        medications.configure_getById_toReturn(medication, forId: medicationId)
+        let medication = MedicationBuilder.aMedication().build()
+        medications.configure_getById_toReturn(medication, forId: medication.id)
 
         // When
-        try await sut.handle(RecordAdministrationCommand(medicationId: String(describing: medicationId)))
+        try await sut.handle(RecordAdministrationCommand(medicationId: String(describing: medication.id)))
 
         // Then
-        administrations.verify_add_wasCalled(withAdministrationFor: medicationId)
+        administrations.verify_add_wasCalled(withAdministrationFor: medication.id)
         administrations.verify_save_wasCalled()
     }
 
@@ -61,18 +60,17 @@ class RecordAdministrationUseCaseTests: XCTestCase {
 
     func test_donates_shortcut_on_success() async throws {
         // Given
-        let medicationId = MedicationId()
-        let medication = Medication(id: medicationId, name: "My Medication")
-        medications.configure_getById_toReturn(medication, forId: medicationId)
+        let medication = MedicationBuilder.aMedication().build()
+        medications.configure_getById_toReturn(medication, forId: medication.id)
 
         // When
-        try await sut.handle(RecordAdministrationCommand(medicationId: String(describing: medicationId)))
+        try await sut.handle(RecordAdministrationCommand(medicationId: String(describing: medication.id)))
 
         // Then
         let administrationId = administrations.added!.id
         let expectedEvent = AdministrationRecorded(
             id: administrationId,
-            medicationId: medicationId,
+            medicationId: medication.id,
             administrationDate: Date.current,
             medicationName: medication.name
         )
@@ -82,13 +80,12 @@ class RecordAdministrationUseCaseTests: XCTestCase {
 
     func test_throws_an_error_if_an_administration_was_already_recorded_for_the_medication_today() async throws {
         // Given
-        let medicationId = MedicationId()
-        let medication = Medication(id: medicationId, name: "My Medication")
-        medications.configure_getById_toReturn(medication, forId: medicationId)
-        administrations.configure_hasAdministration_toReturn(true, on: Date.current, for: medicationId)
+        let medication = MedicationBuilder.aMedication().build()
+        medications.configure_getById_toReturn(medication, forId: medication.id)
+        administrations.configure_hasAdministration_toReturn(true, on: Date.current, for: medication.id)
 
         do {
-            try await sut.handle(RecordAdministrationCommand(medicationId: String(describing: medicationId)))
+            try await sut.handle(RecordAdministrationCommand(medicationId: String(describing: medication.id)))
             XCTFail("Expected an error to be thrown")
         } catch RecordAdministrationError.administrationAlreadyRecorded {
             // Yay!

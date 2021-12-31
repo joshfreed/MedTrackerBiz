@@ -46,7 +46,7 @@ public class MedicationService {
 
 extension MedicationService: TrackMedicationUseCase {
     public func handle(_ command: TrackMedicationCommand) async throws {
-        let medication = Medication(name: command.name)
+        let medication = try Medication(name: command.name, administrationTime: command.administrationTime)
         try await medications.add(medication)
         try await medications.save()
         publishCurrentValue(of: GetTrackedMedicationsQuery(date: Date.current))

@@ -12,11 +12,17 @@ class MockMedications: MedicationRepository {
         added.append(medication)
     }
 
-    func verify_add_wasCalled(withName name: String, file: StaticString = #filePath, line: UInt = #line) {
+    func verify_add_wasCalled(
+        withName name: String,
+        andTime time: Int,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
         guard let med = added.first(where: { $0.name == name }) else {
             XCTFail("Expected medication was not added", file: file, line: line)
             return
         }
+        XCTAssertEqual(time, med.administrationTime, file: file, line: line)
     }
 
     // MARK: getAll

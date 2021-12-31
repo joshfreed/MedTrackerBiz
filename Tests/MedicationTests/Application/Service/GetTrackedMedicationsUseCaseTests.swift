@@ -20,7 +20,9 @@ class GetTrackedMedicationsUseCaseTests: XCTestCase {
     }
 
     func test_returns_single_medication_not_administered_today() async throws {
-        medications.configure_getAll_toReturn([.init(name: "Test Med 1")])
+        medications.configure_getAll_toReturn([
+            MedicationBuilder.aMedication().with(name: "Test Med 1").build()
+        ])
 
         let response = try await sut.handle(GetTrackedMedicationsQuery())
 
@@ -32,7 +34,7 @@ class GetTrackedMedicationsUseCaseTests: XCTestCase {
     func test_returns_single_medication_that_was_administered_today() async throws {
         // Given
         let today = Date()
-        let med = Medication(name: "Testaprexin")
+        let med = MedicationBuilder.aMedication().with(name: "Testaprexin").build()
         medications.configure_getAll_toReturn([med])
         administrations.configure_hasAdministration_toReturn(true, on: today, for: med.id)
 
@@ -46,9 +48,9 @@ class GetTrackedMedicationsUseCaseTests: XCTestCase {
     func test_returns_multiple_medications_and_their_administration_states() async throws {
         // Given
         let today = Date()
-        let med1 = Medication(name: "Testaprexin")
-        let med2 = Medication(name: "Allegra")
-        let med3 = Medication(name: "Beezlepill")
+        let med1 = MedicationBuilder.aMedication().with(name: "Testaprexin").build()
+        let med2 = MedicationBuilder.aMedication().with(name: "Allegra").build()
+        let med3 = MedicationBuilder.aMedication().with(name: "Beezlepill").build()
         medications.configure_getAll_toReturn([med1, med2, med3])
         administrations.configure_hasAdministration_toReturn(true, on: today, for: med1.id)
         administrations.configure_hasAdministration_toReturn(false, on: today, for: med2.id)

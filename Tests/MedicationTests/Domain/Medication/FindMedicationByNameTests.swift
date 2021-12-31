@@ -17,7 +17,12 @@ class FindMedicationByNameTests: XCTestCase {
 
     // MARK: - Helpers
 
-    private func assertFindMedication(named name: String, from medications: [String], file: StaticString = #filePath, line: UInt = #line) async throws {
+    private func assertFindMedication(
+        named name: String,
+        from medications: [String],
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) async throws {
         givenMedications(medications)
 
         let medication = try await sut.findOne(named: name)
@@ -30,7 +35,7 @@ class FindMedicationByNameTests: XCTestCase {
         var medicationList: [Medication] = []
 
         for name in medicationNames {
-            let medication = Medication(name: name)
+            let medication = MedicationBuilder.aMedication().with(name: name).build()
             medicationList.append(medication)
         }
 

@@ -46,13 +46,12 @@ class RemoveAdministrationUseCaseTests: XCTestCase {
         }
     }
 
-    func test_no_matching_administration_throws_notFound_error() async {
-        let medicationId = MedicationId()
-        let medication = Medication(id: medicationId, name: "My Medication")
-        medications.configure_getById_toReturn(medication, forId: medicationId)
+    func test_no_matching_administration_throws_notFound_error() async throws {
+        let medication = MedicationBuilder.aMedication().build()
+        medications.configure_getById_toReturn(medication, forId: medication.id)
 
         do {
-            try await sut.handle(RemoveAdministrationCommand(medicationId: String(describing: medicationId)))
+            try await sut.handle(RemoveAdministrationCommand(medicationId: String(describing: medication.id)))
             XCTFail("Expected an error to be thrown")
         } catch RemoveAdministrationError.administrationNotFound {
             // Yay!
@@ -64,7 +63,9 @@ class RemoveAdministrationUseCaseTests: XCTestCase {
     func test_deletes_administration_record_matching_medicationId_and_date() async throws {
         // Given
         let medicationId = MedicationId()
-        let medication = Medication(id: medicationId, name: "My Medication")
+        let medication = MedicationBuilder.aMedication()
+            .with(id: medicationId)
+            .build()
         medications.configure_getById_toReturn(medication, forId: medicationId)
         let administration = Administration(medicationId: medicationId)
         administrations.configure_findByMedicationAndDate_toReturn(administration, for: medicationId, and: currentDate)
@@ -80,7 +81,9 @@ class RemoveAdministrationUseCaseTests: XCTestCase {
     func test_removeAdministrationUseCase_publishes_an_updates_to_query() async throws {
         // Given
         let medicationId = MedicationId()
-        let medication = Medication(id: medicationId, name: "My Medication")
+        let medication = MedicationBuilder.aMedication()
+            .with(id: medicationId)
+            .build()
         medications.configure_getAll_toReturn([medication])
         medications.configure_getById_toReturn(medication, forId: medicationId)
         let administration = Administration(medicationId: medicationId)
