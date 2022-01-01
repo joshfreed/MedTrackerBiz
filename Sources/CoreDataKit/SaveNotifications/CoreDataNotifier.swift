@@ -1,7 +1,7 @@
 import Foundation
 import Combine
 
-protocol CoreDataNotifier {
+public protocol CoreDataNotifier {
     func postCoreDataDidChange()
     func coreDataDidChange() -> AnyPublisher<Void, Never>
 }

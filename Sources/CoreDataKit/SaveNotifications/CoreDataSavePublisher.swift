@@ -3,22 +3,38 @@ import CoreData
 import Combine
 import OSLog
 
-class CoreDataSavePublisher {
-    private var context: NSManagedObjectContext
-    private var logger: Logger
+public class CoreDataSavePublisher {
+    private let context: NSManagedObjectContext
+    private let notifier: CoreDataNotifier
+    private let logger: Logger
     private var cancellable: AnyCancellable?
 
-    init(context: NSManagedObjectContext, logger: Logger) {
+    public init(
+        context: NSManagedObjectContext,
+        notifier: CoreDataNotifier,
+        logger: Logger
+    ) {
+        logger.debug("CoreDataSavePublisher::init")
         self.context = context
+        self.notifier = notifier
         self.logger = logger
     }
 
-    func publishWhenCoreDataSaves() {
+    deinit {
+        logger.debug("CoreDataSavePublisher::deinit")
+    }
+
+    public func publishWhenCoreDataSaves() {
         cancellable = NotificationCenter.default
             .publisher(for: NSManagedObjectContext.didSaveObjectsNotification, object: context)
             .sink { [weak self] _ in
                 self?.logger.debug("Received MOC didSaveObjectsNotification")
-                UserDefaultsCoreDataNotifier.shared.postCoreDataDidChange()
+                self?.notifier.postCoreDataDidChange()
             }
+    }
+
+    public func stopPublishing() {
+        cancellable?.cancel()
+        cancellable = nil
     }
 }
