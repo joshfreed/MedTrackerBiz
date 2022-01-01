@@ -8,8 +8,11 @@ let package = Package(
     platforms: [.iOS(.v15), .macOS(.v12)],
     products: [
         .library(
-            name: "MedTrackerBiz",
+            name: "MedicationApp",
             targets: ["MedicationApp"]),
+        .library(
+            name: "CoreDataKit",
+            targets: ["CoreDataKit"]),
     ],
     dependencies: [
         .package(name: "JFLib", url: "https://github.com/joshfreed/JFLib", branch: "main")
@@ -22,11 +25,20 @@ let package = Package(
                 .product(name: "JFLib.DomainEvents", package: "JFLib"),
             ],
             path: "Sources/Medication"),
+        .target(
+            name: "CoreDataKit",
+            dependencies: [
+                "MedicationApp"
+            ],
+            resources: [.copy("MedTracker.xcdatamodeld")]),
         .testTarget(
             name: "MedicationTests",
             dependencies: [
                 "MedicationApp",
                 .product(name: "JFLib.Testing", package: "JFLib")
             ]),
+        .testTarget(
+            name: "CoreDataKitTests",
+            dependencies: ["CoreDataKit"]),
     ]
 )
