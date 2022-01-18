@@ -5,20 +5,14 @@ import JFLib_DomainEvents
 public class MedicationService {
     private let medications: MedicationRepository
     private let administrations: AdministrationRepository
-    private let shortcutDonation: ShortcutDonationService
-    private let widgetService: WidgetService
     private var getTrackedMedicationsSubjects: [DateOnly: CurrentValueSubject<GetTrackedMedicationsResponse?, Error>] = [:]
 
     public init(
         medications: MedicationRepository,
-        administrations: AdministrationRepository,
-        shortcutDonation: ShortcutDonationService,
-        widgetService: WidgetService
+        administrations: AdministrationRepository
     ) {
         self.medications = medications
         self.administrations = administrations
-        self.shortcutDonation = shortcutDonation
-        self.widgetService = widgetService
     }
 
     /// Publishes the current value of all `GetTrackedMedicationsContinuousQuery` that have been subscribed
@@ -46,11 +40,21 @@ public class MedicationService {
 
 extension MedicationService: TrackMedicationUseCase {
     public func handle(_ command: TrackMedicationCommand) async throws {
+        DomainEventPublisher.shared.subscribe(DomainEventSubscriber<NewMedicationTracked> { domainEvent in
+            self.publishCurrentValue(of: GetTrackedMedicationsQuery(date: Date.current))
+        })
+
         let medication = try Medication(name: command.name, administrationTime: command.administrationTime)
+        DomainEvents.add(NewMedicationTracked(
+            id: String(describing: medication.id),
+            name: medication.name,
+            administrationTime: medication.administrationTime
+        ))
         try await medications.add(medication)
         try await medications.save()
-        publishCurrentValue(of: GetTrackedMedicationsQuery(date: Date.current))
-        widgetService.reloadWidget()
+
+        DomainEventPublisher.shared.publishPendingEvents()
+        DomainEventPublisher.shared.reset()
     }
 }
 
@@ -124,9 +128,7 @@ extension MedicationService: RecordAdministrationUseCase {
 
     private func recordAdministration(medication: Medication, administrationDate: Date) async throws {
         DomainEventPublisher.shared.subscribe(DomainEventSubscriber<AdministrationRecorded> { domainEvent in
-            self.shortcutDonation.donateInteraction(domainEvent: domainEvent)
             self.publishCurrentValue(of: GetTrackedMedicationsQuery(date: Date.current))
-            self.widgetService.reloadWidget()
         })
 
         let hasAdministration = try await administrations.hasAdministration(on: administrationDate, for: medication.id)
@@ -148,6 +150,10 @@ extension MedicationService: RecordAdministrationUseCase {
 
 extension MedicationService: RemoveAdministrationUseCase {
     public func handle(_ command: RemoveAdministrationCommand) async throws {
+        DomainEventPublisher.shared.subscribe(DomainEventSubscriber<AdministrationRemoved> { domainEvent in
+            self.publishCurrentValue(of: GetTrackedMedicationsQuery(date: Date.current))
+        })
+
         guard let medicationId = MedicationId(uuidString: command.medicationId) else {
             throw RemoveAdministrationError.invalidMedicationId
         }
@@ -163,7 +169,12 @@ extension MedicationService: RemoveAdministrationUseCase {
         try await administrations.remove(administration)
         try await administrations.save()
 
-        publishCurrentValue(of: GetTrackedMedicationsQuery(date: Date.current))
-        widgetService.reloadWidget()
+        DomainEvents.add(AdministrationRemoved(
+            administrationId: String(describing: administration.id),
+            medicationId: String(describing: command.medicationId)
+        ))
+
+        DomainEventPublisher.shared.publishPendingEvents()
+        DomainEventPublisher.shared.reset()
     }
 }

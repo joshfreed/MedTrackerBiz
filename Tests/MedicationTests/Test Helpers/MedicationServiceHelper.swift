@@ -4,15 +4,11 @@ import Foundation
 extension MedicationService {
     static func factory(
         medications: MedicationRepository = MockMedications(),
-        administrations: AdministrationRepository = MockAdministrations(),
-        shortcutDonation: ShortcutDonationService = MockDonationService(),
-        widgetService: WidgetService = EmptyWidgetService()
+        administrations: AdministrationRepository = MockAdministrations()
     ) -> MedicationService {
         MedicationService(
             medications: medications,
-            administrations: administrations,
-            shortcutDonation: shortcutDonation,
-            widgetService: widgetService
+            administrations: administrations
         )
     }
 }

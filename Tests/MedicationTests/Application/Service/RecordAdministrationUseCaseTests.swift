@@ -6,7 +6,6 @@ class RecordAdministrationUseCaseTests: XCTestCase {
     var sut: RecordAdministrationUseCase!
     let administrations = MockAdministrations()
     let medications = MockMedications()
-    let donationService = MockDonationService()
     let today = Date()
 
     override func setUpWithError() throws {
@@ -14,8 +13,7 @@ class RecordAdministrationUseCaseTests: XCTestCase {
 
         sut = MedicationService.factory(
             medications: medications,
-            administrations: administrations,
-            shortcutDonation: donationService
+            administrations: administrations
         )
     }
 
@@ -58,25 +56,25 @@ class RecordAdministrationUseCaseTests: XCTestCase {
         }
     }
 
-    func test_donates_shortcut_on_success() async throws {
-        // Given
-        let medication = MedicationBuilder.aMedication().build()
-        medications.configure_getById_toReturn(medication, forId: medication.id)
-
-        // When
-        try await sut.handle(RecordAdministrationCommand(medicationId: String(describing: medication.id)))
-
-        // Then
-        let administrationId = administrations.added!.id
-        let expectedEvent = AdministrationRecorded(
-            id: administrationId,
-            medicationId: medication.id,
-            administrationDate: Date.current,
-            medicationName: medication.name
-        )
-        donationService.verify_donateInteraction_wasCalled()
-        XCTAssertEqual(donationService.donatedDomainEvent as? AdministrationRecorded, expectedEvent)
-    }
+//    func test_donates_shortcut_on_success() async throws {
+//        // Given
+//        let medication = MedicationBuilder.aMedication().build()
+//        medications.configure_getById_toReturn(medication, forId: medication.id)
+//
+//        // When
+//        try await sut.handle(RecordAdministrationCommand(medicationId: String(describing: medication.id)))
+//
+//        // Then
+//        let administrationId = administrations.added!.id
+//        let expectedEvent = AdministrationRecorded(
+//            id: administrationId,
+//            medicationId: medication.id,
+//            administrationDate: Date.current,
+//            medicationName: medication.name
+//        )
+//        donationService.verify_donateInteraction_wasCalled()
+//        XCTAssertEqual(donationService.donatedDomainEvent as? AdministrationRecorded, expectedEvent)
+//    }
 
     func test_throws_an_error_if_an_administration_was_already_recorded_for_the_medication_today() async throws {
         // Given
