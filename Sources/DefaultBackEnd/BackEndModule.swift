@@ -7,7 +7,7 @@ import MTBackEndCore
 import MedicationContext
 import CoreDataKit
 
-public class BackEndModule {
+public class BackEndModule: MedTrackerModule {
     public init() {}
 
     public func registerServices(env: XcodeEnvironment, container: DependencyContainer) {
