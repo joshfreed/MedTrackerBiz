@@ -26,7 +26,9 @@ let package = Package(
     targets: [
         .target(
             name: "MTCommon",
-            dependencies: [],
+            dependencies: [
+                .product(name: "JFLib.Services", package: "JFLib"),
+            ],
             path: "Sources/Common"),
         .target(
             name: "MTBackEndCore",
