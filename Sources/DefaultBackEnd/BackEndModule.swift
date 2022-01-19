@@ -2,9 +2,9 @@ import Foundation
 import Dip
 import JFLib_Services
 import JFLib_DomainEvents
-import Common
-import MedTrackerBackEnd
-import MedicationApp
+import MTCommon
+import MTBackEndCore
+import MedicationContext
 import CoreDataKit
 
 public class BackEndModule {

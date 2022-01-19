@@ -1,5 +1,5 @@
 import XCTest
-@testable import MedicationApp
+@testable import MedicationContext
 
 class GetTrackedMedicationsUseCaseTests: XCTestCase {
     var sut: MedicationService!

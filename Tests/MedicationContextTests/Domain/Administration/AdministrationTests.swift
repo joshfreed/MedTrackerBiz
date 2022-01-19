@@ -1,5 +1,5 @@
 import XCTest
-@testable import MedicationApp
+@testable import MedicationContext
 @testable import JFLib_Testing
 
 class AdministrationTests: XCTestCase {

@@ -1,6 +1,6 @@
 import Foundation
 import XCTest
-import MedicationApp
+import MedicationContext
 
 class MockAdministrations: AdministrationRepository {
 

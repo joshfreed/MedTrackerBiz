@@ -1,7 +1,7 @@
 import Foundation
 import Combine
-import MedTrackerBackEnd
-import MedicationApp
+import MTBackEndCore
+import MedicationContext
 
 class DefaultBackEnd: MedTrackerBackEnd {
     private let trackMedication: TrackMedicationUseCase

@@ -1,6 +1,6 @@
 import XCTest
 import Combine
-@testable import MedicationApp
+@testable import MedicationContext
 
 class GetTrackMedicationsContinuousQueryTests: XCTestCase {
     var sut: MedicationService!

@@ -1,6 +1,6 @@
 import Foundation
 import Combine
-import MedicationApp
+import MedicationContext
 
 public protocol MedTrackerBackEnd {
     // MARK: Queries

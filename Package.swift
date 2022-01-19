@@ -9,50 +9,52 @@ let package = Package(
     products: [
         .library(
             name: "MedTrackerCommon",
-            targets: ["Common"]),
+            targets: ["MTCommon"]),
         .library(
-            name: "MedTrackerBackEnd",
-            targets: ["MedTrackerBackEnd"]),
+            name: "MedTrackerBackEndCore",
+            targets: ["MTBackEndCore"]),
         .library(
-            name: "DefaultBackEnd",
-            targets: ["DefaultBackEnd"]),
+            name: "MedTrackerDefaultBackEnd",
+            targets: ["MTDefaultBackEnd"]),
     ],
     dependencies: [
         .package(name: "JFLib", url: "https://github.com/joshfreed/JFLib", branch: "main")
     ],
     targets: [
         .target(
-            name: "Common",
-            dependencies: []),
+            name: "MTCommon",
+            dependencies: [],
+            path: "Sources/Common"),
         .target(
-            name: "MedTrackerBackEnd",
-            dependencies: ["MedicationApp"]),
+            name: "MTBackEndCore",
+            dependencies: ["MedicationContext"],
+            path: "Sources/BackEndCore"),
         .target(
-            name: "DefaultBackEnd",
+            name: "MTDefaultBackEnd",
             dependencies: [
                 .product(name: "JFLib.Services", package: "JFLib"),
-                "Common",
-                "MedTrackerBackEnd",
-                "MedicationApp",
+                "MTCommon",
+                "MTBackEndCore",
+                "MedicationContext",
                 "CoreDataKit"
-            ]),
+            ],
+            path: "Sources/DefaultBackEnd"),
         .target(
-            name: "MedicationApp",
+            name: "MedicationContext",
             dependencies: [
                 .product(name: "JFLib.Date", package: "JFLib"),
                 .product(name: "JFLib.DomainEvents", package: "JFLib"),
-            ],
-            path: "Sources/Medication"),
+            ]),
         .testTarget(
-            name: "MedicationTests",
+            name: "MedicationContextTests",
             dependencies: [
-                "MedicationApp",
+                "MedicationContext",
                 .product(name: "JFLib.Testing", package: "JFLib")
             ]),
         .target(
             name: "CoreDataKit",
             dependencies: [
-                "MedicationApp"
+                "MedicationContext"
             ],
             resources: [.copy("MedTracker.xcdatamodeld")]),
         .testTarget(

@@ -1,7 +1,7 @@
 import XCTest
 @testable import JFLib_Testing
 import JFLib_DomainEvents
-@testable import MedicationApp
+@testable import MedicationContext
 
 class MedicationTests: XCTestCase {
     let today = Date()

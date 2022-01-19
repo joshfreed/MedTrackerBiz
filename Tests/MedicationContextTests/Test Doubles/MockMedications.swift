@@ -1,6 +1,6 @@
 import Foundation
 import XCTest
-@testable import MedicationApp
+@testable import MedicationContext
 
 class MockMedications: MedicationRepository {
 

@@ -1,6 +1,6 @@
 import Foundation
 import CoreData
-import MedicationApp
+import MedicationContext
 
 public class CoreDataMedications: MedicationRepository {
     private let context: NSManagedObjectContext

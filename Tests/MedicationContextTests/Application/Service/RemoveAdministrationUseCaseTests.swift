@@ -1,6 +1,6 @@
 import XCTest
 import Combine
-@testable import MedicationApp
+@testable import MedicationContext
 @testable import JFLib_Testing
 
 class RemoveAdministrationUseCaseTests: XCTestCase {

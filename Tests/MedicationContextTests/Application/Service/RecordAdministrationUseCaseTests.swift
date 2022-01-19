@@ -1,6 +1,6 @@
 import XCTest
 @testable import JFLib_Testing
-@testable import MedicationApp
+@testable import MedicationContext
 
 class RecordAdministrationUseCaseTests: XCTestCase {
     var sut: RecordAdministrationUseCase!

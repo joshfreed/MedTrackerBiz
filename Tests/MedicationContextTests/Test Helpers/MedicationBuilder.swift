@@ -1,5 +1,5 @@
 import Foundation
-@testable import MedicationApp
+@testable import MedicationContext
 
 class MedicationBuilder {
     private var id = MedicationId()

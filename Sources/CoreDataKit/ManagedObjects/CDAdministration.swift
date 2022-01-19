@@ -8,7 +8,7 @@
 
 import Foundation
 import CoreData
-import MedicationApp
+import MedicationContext
 
 @objc(CDAdministration)
 public class CDAdministration: NSManagedObject {

@@ -1,5 +1,5 @@
 import XCTest
-import MedicationApp
+import MedicationContext
 @testable import CoreDataKit
 
 class CDMedicationTests: XCTestCase {
