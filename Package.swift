@@ -16,6 +16,9 @@ let package = Package(
         .library(
             name: "MedTrackerDefaultBackEnd",
             targets: ["MTDefaultBackEnd"]),
+        .library(
+            name: "MedTrackerModules",
+            targets: ["MTLocalNotifications"])
     ],
     dependencies: [
         .package(name: "JFLib", url: "https://github.com/joshfreed/JFLib", branch: "main")
@@ -60,5 +63,10 @@ let package = Package(
         .testTarget(
             name: "CoreDataKitTests",
             dependencies: ["CoreDataKit"]),
+
+        .target(
+            name: "MTLocalNotifications",
+            dependencies: ["MTCommon"],
+            path: "Sources/LocalNotifications"),
     ]
 )
