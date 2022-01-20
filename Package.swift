@@ -18,7 +18,7 @@ let package = Package(
             targets: ["MTDefaultBackEnd"]),
         .library(
             name: "MedTrackerModules",
-            targets: ["MTLocalNotifications"])
+            targets: ["MTLocalNotifications", "MTWidgetCenter"])
     ],
     dependencies: [
         .package(name: "JFLib", url: "https://github.com/joshfreed/JFLib", branch: "main")
@@ -70,5 +70,11 @@ let package = Package(
             name: "MTLocalNotifications",
             dependencies: ["MTCommon"],
             path: "Sources/LocalNotifications"),
+
+        .target(
+            name: "MTWidgetCenter",
+            dependencies: ["MTCommon"],
+            path: "Sources/WidgetCenter"),
+
     ]
 )
