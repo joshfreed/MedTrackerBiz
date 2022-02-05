@@ -18,37 +18,9 @@ class MedicationTests: XCTestCase {
     func test_initialize_medication() throws {
         let medicationId = MedicationId()
         let name = "Awesome Pills"
-        let administrationHour = 11
-        let medication = try Medication(
-            id: medicationId,
-            name: name,
-            administrationTime: administrationHour
-        )
+        let medication = Medication(id: medicationId, name: name)
         XCTAssertEqual(medicationId, medication.id)
         XCTAssertEqual(name, medication.name)
-        XCTAssertEqual(administrationHour, medication.administrationTime)
-    }
-
-    func test_initialize_throws_error_if_administrationTime_is_too_high() throws {
-        do {
-            _ = try Medication(id: MedicationId(), name: "Anything", administrationTime: 24)
-            XCTFail("Expected invalidAdministrationTime error to be thrown")
-        } catch MedicationError.invalidAdministrationTime {
-            // Success!
-        }
-    }
-
-    func test_initialize_throws_error_if_administrationTime_is_too_low() throws {
-        do {
-            _ = try Medication(id: MedicationId(), name: "Anything", administrationTime: -1)
-            XCTFail("Expected invalidAdministrationTime error to be thrown")
-        } catch MedicationError.invalidAdministrationTime {
-            // Success!
-        }
-    }
-
-    func test_initialize_administrationTime_zero_is_okay() throws {
-        _ = try Medication(id: MedicationId(), name: "Anything", administrationTime: 0)
     }
 
     // MARK: recordAdministration

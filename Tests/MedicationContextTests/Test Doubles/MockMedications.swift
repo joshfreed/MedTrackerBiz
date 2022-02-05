@@ -22,7 +22,6 @@ class MockMedications: MedicationRepository {
             XCTFail("Expected medication was not added", file: file, line: line)
             return
         }
-        XCTAssertEqual(time, med.administrationTime, file: file, line: line)
     }
 
     // MARK: getAll

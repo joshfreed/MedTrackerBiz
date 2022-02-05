@@ -8,23 +8,18 @@ public struct Medication: Equatable, Codable {
     /// The name of the medication
     public private(set) var name: String
 
-    /// The hour of the day the medication should be administered
-    public private(set) var administrationTime: Int
+    public private(set) var reminder: MedicationReminder?
 
-    public init(name: String, administrationTime: Int) throws {
-        try self.init(id: MedicationId(), name: name, administrationTime: administrationTime)
+    public init(name: String) {
+        self.init(id: MedicationId(), name: name)
     }
 
-    init(id: MedicationId, name: String, administrationTime: Int) throws {
-        guard administrationTime >= 0 && administrationTime < 24 else {
-            throw MedicationError.invalidAdministrationTime
-        }
+    init(id: MedicationId, name: String) {
         self.id = id
         self.name = name
-        self.administrationTime = administrationTime
     }
 
-    public static func == (lhs: Medication, rhs: Medication) -> Bool {
+    public static func ==(lhs: Medication, rhs: Medication) -> Bool {
         lhs.id == rhs.id
     }
 

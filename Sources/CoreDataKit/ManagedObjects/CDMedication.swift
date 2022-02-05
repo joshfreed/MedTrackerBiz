@@ -24,14 +24,12 @@ public class CDMedication: NSManagedObject {
     func fromDomainModel(_ medication: Medication) {
         id = medication.id.uuid
         name = medication.name
-        administrationHour = Int16(medication.administrationTime)
     }
 
     func toDomainModel() throws -> Medication {
         let values: [String: Any] = [
             "id": ["uuid": id!.uuidString],
             "name": name!,
-            "administrationTime": Int(administrationHour)
         ]
         let data = try JSONSerialization.data(withJSONObject: values, options: [])
         let decoder = JSONDecoder()

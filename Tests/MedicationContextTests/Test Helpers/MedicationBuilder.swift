@@ -4,14 +4,13 @@ import Foundation
 class MedicationBuilder {
     private var id = MedicationId()
     private var name = "Random Name"
-    private var administrationTime = 9
 
     static func aMedication() -> MedicationBuilder {
         MedicationBuilder()
     }
 
     func build() -> Medication {
-        let medication = try! Medication(id: id, name: name, administrationTime: administrationTime)
+        var medication = Medication(id: id, name: name)
         return medication
     }
 
@@ -25,8 +24,5 @@ class MedicationBuilder {
         return self
     }
 
-    func administeredAt(hour: Int) -> MedicationBuilder {
-        administrationTime = hour
-        return self
-    }
+    
 }

@@ -44,11 +44,10 @@ extension MedicationService: TrackMedicationUseCase {
             self.publishCurrentValue(of: GetTrackedMedicationsQuery(date: Date.current))
         })
 
-        let medication = try Medication(name: command.name, administrationTime: command.administrationTime)
+        let medication = Medication(name: command.name)
         DomainEvents.add(NewMedicationTracked(
             id: String(describing: medication.id),
-            name: medication.name,
-            administrationTime: medication.administrationTime
+            name: medication.name
         ))
         try await medications.add(medication)
         try await medications.save()
