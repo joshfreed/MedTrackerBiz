@@ -37,4 +37,12 @@ public struct Medication: Equatable, Codable {
         ))
         return administration
     }
+
+    mutating func enableReminderNotifications(at reminderTime: ReminderTime) {
+        reminder = MedicationReminder(reminderTime: reminderTime)
+    }
+
+    mutating func disableReminderNotifications() {
+        reminder = nil
+    }
 }

@@ -7,12 +7,17 @@
         <attribute name="medicationId" attributeType="UUID" usesScalarValueType="NO"/>
     </entity>
     <entity name="CDMedication" representedClassName="CDMedication" syncable="YES">
-        <attribute name="administrationHour" attributeType="Integer 16" minValueString="0" maxValueString="23" defaultValueString="9" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="name" attributeType="String" defaultValueString=""/>
+        <relationship name="reminder" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDMedicationReminder"/>
+    </entity>
+    <entity name="CDMedicationReminder" representedClassName="CDMedicationReminder" syncable="YES">
+        <attribute name="reminderHour" attributeType="Integer 16" minValueString="0" maxValueString="23" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="reminderMinute" attributeType="Integer 16" minValueString="0" maxValueString="59" defaultValueString="0" usesScalarValueType="YES"/>
     </entity>
     <elements>
         <element name="CDAdministration" positionX="-54" positionY="9" width="128" height="89"/>
         <element name="CDMedication" positionX="-63" positionY="-18" width="128" height="74"/>
+        <element name="CDMedicationReminder" positionX="-54" positionY="27" width="128" height="59"/>
     </elements>
 </model>

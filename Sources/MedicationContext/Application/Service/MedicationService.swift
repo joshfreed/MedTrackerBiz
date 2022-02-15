@@ -44,11 +44,15 @@ extension MedicationService: TrackMedicationUseCase {
             self.publishCurrentValue(of: GetTrackedMedicationsQuery(date: Date.current))
         })
 
-        let medication = Medication(name: command.name)
+        var medication = Medication(name: command.name)
         DomainEvents.add(NewMedicationTracked(
             id: String(describing: medication.id),
             name: medication.name
         ))
+
+        let reminderTime = try ReminderTime(hour: 9, minute: 0)
+        medication.enableReminderNotifications(at: reminderTime)
+
         try await medications.add(medication)
         try await medications.save()
 

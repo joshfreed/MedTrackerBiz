@@ -4,6 +4,7 @@ import Foundation
 class MedicationBuilder {
     private var id = MedicationId()
     private var name = "Random Name"
+    private var reminderTime: ReminderTime?
 
     static func aMedication() -> MedicationBuilder {
         MedicationBuilder()
@@ -11,6 +12,9 @@ class MedicationBuilder {
 
     func build() -> Medication {
         var medication = Medication(id: id, name: name)
+        if let reminderTime = reminderTime {
+            medication.enableReminderNotifications(at: reminderTime)
+        }
         return medication
     }
 
@@ -24,5 +28,8 @@ class MedicationBuilder {
         return self
     }
 
-    
+    func withRemindersEnabled(at reminderTime: ReminderTime) -> MedicationBuilder {
+        self.reminderTime = reminderTime
+        return self
+    }
 }

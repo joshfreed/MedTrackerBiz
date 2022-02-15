@@ -1,11 +1,3 @@
-//
-//  CDAdministration.swift
-//  MedTracker
-//
-//  Created by Josh Freed on 12/31/21.
-//
-//
-
 import Foundation
 import CoreData
 import MedicationContext
