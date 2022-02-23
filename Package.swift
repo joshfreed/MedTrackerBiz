@@ -68,7 +68,7 @@ let package = Package(
 
         .target(
             name: "MTLocalNotifications",
-            dependencies: ["MTCommon"],
+            dependencies: ["MTCommon", "MTBackEndCore"],
             path: "Sources/LocalNotifications"),
 
         .target(

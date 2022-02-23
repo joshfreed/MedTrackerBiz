@@ -36,6 +36,16 @@ public class BackEndModule: MedTrackerModule {
             )
             .implements(GetTrackedMedicationsUseCase.self)
 
+        container.register { NotificationSchedulingEventHandlers.NewMedicationTrackedHandler(useCase: $0) }
+
+        container.register(.singleton) {
+            RemindersService(scheduler: $0)
+        }.implements(ScheduleReminderNotificationsUseCase.self)
+
+        container.register {
+            DailyReminderNotificationScheduler(notificationService: $0, medicationRepository: $1, administrationRepository: $2)
+        }
+
         switch env {
         case .live:
             container.register(.singleton) { PersistenceController.shared.container.viewContext }
@@ -53,5 +63,8 @@ public class BackEndModule: MedTrackerModule {
 
     public func bootstrap(env: XcodeEnvironment) {
         DomainEventPublisher.shared.subscribe(DomainEventForwarder())
+
+        let handler1 = try! JFServices.resolve() as NotificationSchedulingEventHandlers.NewMedicationTrackedHandler
+        DomainEventPublisher.shared.subscribe(handler1)
     }
 }

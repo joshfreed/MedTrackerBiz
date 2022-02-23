@@ -45,4 +45,8 @@ public struct Medication: Equatable, Codable {
     mutating func disableReminderNotifications() {
         reminder = nil
     }
+
+    func scheduleReminderNotifications(wasAdministered: Bool) throws -> [ReminderNotification] {
+        []
+    }
 }

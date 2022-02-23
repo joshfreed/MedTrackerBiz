@@ -5,6 +5,7 @@ import Dip
 import JFLib_Services
 import MTCommon
 import MTBackEndCore
+import MedicationContext
 
 public class LocalNotificationModule: MedTrackerModule {
     private var cancellables = Set<AnyCancellable>()
@@ -15,30 +16,13 @@ public class LocalNotificationModule: MedTrackerModule {
     public init() {}
 
     public func registerServices(env: XcodeEnvironment, container: DependencyContainer) {
-        switch env {
-        case .live:
-            container.register(.unique) { LocalNotificationService() }.implements(ReminderService.self)
-        case .test:
-            container.register(.unique) { EmptyReminderService() }.implements(ReminderService.self)
-        case .preview:
-            container.register(.unique) { EmptyReminderService() }.implements(ReminderService.self)
-        }
+        container.register(.unique) { EmptyNotificationService() }.implements(NotificationService.self)
     }
 
     public func bootstrap(env: XcodeEnvironment) {
         guard env == .live else { return }
 
         configureNotifications()
-
-        domainEvents
-            .newMedicationTracked
-            .sink { event in
-                Task {
-                    let reminderService: ReminderService = try! JFServices.resolve()
-                    try await reminderService.scheduleDailyReminder(for: event.id, medicationName: event.name, at: event.administrationTime)
-                }
-            }
-            .store(in: &cancellables)
 
         localNotificationHandler.register()
     }
