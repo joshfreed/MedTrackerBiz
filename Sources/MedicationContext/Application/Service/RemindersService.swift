@@ -8,6 +8,6 @@ public class RemindersService: ScheduleReminderNotificationsUseCase {
     }
 
     public func handle(_ command: ScheduleReminderNotificationsCommand) async throws {
-        try await scheduler.scheduleNotifications(for: command.medicationId, today: Date.current)
+        try await scheduler.scheduleNotifications(for: command.medicationId, startingOn: Date.current)
     }
 }

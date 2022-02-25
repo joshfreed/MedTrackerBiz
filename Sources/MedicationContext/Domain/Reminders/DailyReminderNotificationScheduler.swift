@@ -13,7 +13,7 @@ public class DailyReminderNotificationScheduler {
         self.administrationRepository = administrationRepository
     }
 
-    func scheduleNotifications(for medicationId: String, today: Date) async throws {
+    func scheduleNotifications(for medicationId: String, startingOn date: Date) async throws {
         guard let medicationId = MedicationId(uuidString: medicationId) else {
             throw SchedulingError.invalidMedicationId
         }
@@ -28,7 +28,7 @@ public class DailyReminderNotificationScheduler {
             return
         }
 
-        let wasAdministeredToday = try await administrationRepository.hasAdministration(on: today, for: medicationId)
+        let wasAdministeredToday = try await administrationRepository.hasAdministration(on: date, for: medicationId)
 
         let notifications = try medication.scheduleReminderNotifications(wasAdministered: wasAdministeredToday)
 
