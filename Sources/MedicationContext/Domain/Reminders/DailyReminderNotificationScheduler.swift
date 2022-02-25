@@ -32,7 +32,7 @@ public class DailyReminderNotificationScheduler {
 
         let notifications = try medication.scheduleReminderNotifications(wasAdministered: wasAdministeredToday)
 
-        notificationService.add(notifications: notifications)
+        try await notificationService.add(notifications: notifications)
     }
 
     func cancelPendingNotifications(for medicationId: MedicationId) {

@@ -16,7 +16,14 @@ public class LocalNotificationModule: MedTrackerModule {
     public init() {}
 
     public func registerServices(env: XcodeEnvironment, container: DependencyContainer) {
-        container.register(.unique) { EmptyNotificationService() }.implements(NotificationService.self)
+        switch env {
+        case .live:
+            container.register(.unique) { LocalNotificationService() }.implements(NotificationService.self)
+        case .test:
+            container.register(.unique) { EmptyNotificationService() }.implements(NotificationService.self)
+        case .preview:
+            container.register(.unique) { EmptyNotificationService() }.implements(NotificationService.self)
+        }
     }
 
     public func bootstrap(env: XcodeEnvironment) {
