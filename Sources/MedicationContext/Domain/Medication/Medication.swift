@@ -49,25 +49,41 @@ public struct Medication: Equatable, Codable {
     func scheduleReminderNotifications(wasAdministered: Bool) throws -> [ReminderNotification] {
         guard let reminder = reminder else { return [] }
 
-        let today = Date.current
-
-        var triggerDate = try reminder.reminderTrigger(for: today)
-
         let body = "Have you taken your \(name) today?"
 
         var notifications: [ReminderNotification] = []
+        var index = 0
 
-        for index in 0..<5 {
+        if !wasAdministered && shouldScheduleForToday(reminderTime: reminder.reminderTime) {
             let notification = ReminderNotification(
                 id: "\(id)_\(index)",
                 medicationId: String(describing: id),
                 body: body,
-                triggerDate: triggerDate
+                triggerDate: try reminder.reminderTrigger(for: Date.current)
             )
             notifications.append(notification)
-            triggerDate = triggerDate.addingTimeInterval(24.hours)
+            index += 1
+        }
+
+        let reminderDates = try reminder.scheduleNotifications(starting: Date.current.tomorrow())
+
+        for date in reminderDates {
+            let notification = ReminderNotification(
+                id: "\(id)_\(index)",
+                medicationId: String(describing: id),
+                body: body,
+                triggerDate: date
+            )
+            notifications.append(notification)
+            index += 1
         }
 
         return notifications
+    }
+
+    private func shouldScheduleForToday(reminderTime: ReminderTime) -> Bool {
+        if Date.current.hour < reminderTime.hour { return true }
+        if Date.current.hour == reminderTime.hour && Date.current.minute < reminderTime.minute { return true }
+        return false
     }
 }

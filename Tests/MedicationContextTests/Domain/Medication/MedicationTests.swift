@@ -55,7 +55,7 @@ class MedicationTests: XCTestCase {
 
     // MARK: scheduleReminderNotifications
 
-    func test_scheduleReminderNotifications_() throws {
+    func test_scheduleReminderNotifications_notAdministeredToday() throws {
         let now = try Date.factory(year: 2022, month: 1, day: 29, hour: 6, minute: 13, second: 34)
         let reminderTime = try ReminderTime(hour: 9, minute: 15)
         Date.overrideCurrentDate(now)
@@ -65,7 +65,7 @@ class MedicationTests: XCTestCase {
 
         let notifications = try medication.scheduleReminderNotifications(wasAdministered: false)
 
-        XCTAssertEqual(5, notifications.count)
+        XCTAssertEqual(6, notifications.count)
         assertNotification(
             notifications[0],
             triggerDate: try .factory(year: 2022, month: 1, day: 29, hour: 9, minute: 15, second: 0),
@@ -93,6 +93,92 @@ class MedicationTests: XCTestCase {
         assertNotification(
             notifications[4],
             triggerDate: try .factory(year: 2022, month: 2, day: 2, hour: 9, minute: 15, second: 0),
+            medication: medication,
+            index: 4
+        )
+    }
+
+    func test_scheduleReminderNotifications_notAdministeredToday_currentTimeAfterReminderTime() throws {
+        let now = try Date.factory(year: 2022, month: 1, day: 29, hour: 11, minute: 13, second: 34)
+        let reminderTime = try ReminderTime(hour: 9, minute: 15)
+        Date.overrideCurrentDate(now)
+        let medication = MedicationBuilder.aMedication()
+            .withRemindersEnabled(at: reminderTime)
+            .build()
+
+        let notifications = try medication.scheduleReminderNotifications(wasAdministered: false)
+
+        XCTAssertEqual(5, notifications.count)
+        assertNotification(
+            notifications[0],
+            triggerDate: try .factory(year: 2022, month: 1, day: 30, hour: 9, minute: 15, second: 0),
+            medication: medication,
+            index: 0
+        )
+        assertNotification(
+            notifications[1],
+            triggerDate: try .factory(year: 2022, month: 1, day: 31, hour: 9, minute: 15, second: 0),
+            medication: medication,
+            index: 1
+        )
+        assertNotification(
+            notifications[2],
+            triggerDate: try .factory(year: 2022, month: 2, day: 1, hour: 9, minute: 15, second: 0),
+            medication: medication,
+            index: 2
+        )
+        assertNotification(
+            notifications[3],
+            triggerDate: try .factory(year: 2022, month: 2, day: 2, hour: 9, minute: 15, second: 0),
+            medication: medication,
+            index: 3
+        )
+        assertNotification(
+            notifications[4],
+            triggerDate: try .factory(year: 2022, month: 2, day: 3, hour: 9, minute: 15, second: 0),
+            medication: medication,
+            index: 4
+        )
+    }
+
+    func test_scheduleReminderNotifications_wasAdministeredToday() throws {
+        let now = try Date.factory(year: 2022, month: 1, day: 29, hour: 6, minute: 13, second: 34)
+        let reminderTime = try ReminderTime(hour: 9, minute: 15)
+        Date.overrideCurrentDate(now)
+        let medication = MedicationBuilder.aMedication()
+            .withRemindersEnabled(at: reminderTime)
+            .build()
+
+        let notifications = try medication.scheduleReminderNotifications(wasAdministered: true)
+
+        XCTAssertEqual(5, notifications.count)
+        assertNotification(
+            notifications[0],
+            triggerDate: try .factory(year: 2022, month: 1, day: 30, hour: 9, minute: 15, second: 0),
+            medication: medication,
+            index: 0
+        )
+        assertNotification(
+            notifications[1],
+            triggerDate: try .factory(year: 2022, month: 1, day: 31, hour: 9, minute: 15, second: 0),
+            medication: medication,
+            index: 1
+        )
+        assertNotification(
+            notifications[2],
+            triggerDate: try .factory(year: 2022, month: 2, day: 1, hour: 9, minute: 15, second: 0),
+            medication: medication,
+            index: 2
+        )
+        assertNotification(
+            notifications[3],
+            triggerDate: try .factory(year: 2022, month: 2, day: 2, hour: 9, minute: 15, second: 0),
+            medication: medication,
+            index: 3
+        )
+        assertNotification(
+            notifications[4],
+            triggerDate: try .factory(year: 2022, month: 2, day: 3, hour: 9, minute: 15, second: 0),
             medication: medication,
             index: 4
         )
