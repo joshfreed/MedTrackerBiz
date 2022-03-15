@@ -57,7 +57,6 @@ extension MedicationService: TrackMedicationUseCase {
         try await medications.save()
 
         DomainEventPublisher.shared.publishPendingEvents()
-        DomainEventPublisher.shared.reset()
     }
 }
 
@@ -145,7 +144,6 @@ extension MedicationService: RecordAdministrationUseCase {
         try await administrations.save()
 
         DomainEventPublisher.shared.publishPendingEvents()
-        DomainEventPublisher.shared.reset()
     }
 }
 
@@ -178,6 +176,5 @@ extension MedicationService: RemoveAdministrationUseCase {
         ))
 
         DomainEventPublisher.shared.publishPendingEvents()
-        DomainEventPublisher.shared.reset()
     }
 }

@@ -9,10 +9,9 @@ public struct MedicationReminder: Equatable, Codable {
         self.reminderTime = reminderTime
     }
 
-    func scheduleNotifications(starting startDate: Date) throws -> [Date] {
+    func scheduleNotifications(includeToday: Bool, calendar: Calendar = .current) throws -> [Date] {
         var triggerDates: [Date] = []
-        let calendar = Calendar.current
-        var date = startDate
+        var date = includeToday && canTriggerToday() ? Date.current : Date.current.tomorrow(calendar: calendar)
 
         for _ in 0..<numberOfDaysToSchedule {
             let triggerDate = try reminderTrigger(for: date, calendar: calendar)
@@ -34,5 +33,10 @@ public struct MedicationReminder: Equatable, Codable {
         }
 
         return triggerDate
+    }
+
+    /// Returns true if this reminder can still be triggered today. A reminder can be triggered if it's reminder time is after the current time.
+    func canTriggerToday() -> Bool {
+        reminderTime.canTriggerToday()
     }
 }

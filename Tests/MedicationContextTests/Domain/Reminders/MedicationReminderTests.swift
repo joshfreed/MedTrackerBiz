@@ -1,14 +1,16 @@
 import XCTest
 @testable import MedicationContext
+@testable import JFLib_Testing
 
 class MedicationReminderTests: XCTestCase {
     let calendar = Calendar.current
 
-    func test_scheduleNotifications() throws {
+    func test_scheduleNotifications_includingToday_beforeTriggerTime() throws {
         let medicationReminder = MedicationReminder(reminderTime: try .init(hour: 9, minute: 0))
         let startDate = try buildDate(year: 2022, month: 1, day: 23, hour: 8, minute: 23, second: 11)
+        Date.overrideCurrentDate(startDate)
 
-        let triggerDates = try medicationReminder.scheduleNotifications(starting: startDate)
+        let triggerDates = try medicationReminder.scheduleNotifications(includeToday: true)
 
         XCTAssertEqual(5, triggerDates.count)
         assertTriggerDate(triggerDates[0], year: 2022, month: 1, day: 23, hour: 9, minute: 00)
@@ -17,6 +19,37 @@ class MedicationReminderTests: XCTestCase {
         assertTriggerDate(triggerDates[3], year: 2022, month: 1, day: 26, hour: 9, minute: 00)
         assertTriggerDate(triggerDates[4], year: 2022, month: 1, day: 27, hour: 9, minute: 00)
     }
+
+    func test_scheduleNotifications_includingToday_afterTriggerTime() throws {
+        let medicationReminder = MedicationReminder(reminderTime: try .init(hour: 9, minute: 0))
+        let startDate = try buildDate(year: 2022, month: 1, day: 23, hour: 14, minute: 23, second: 11)
+        Date.overrideCurrentDate(startDate)
+
+        let triggerDates = try medicationReminder.scheduleNotifications(includeToday: true)
+
+        XCTAssertEqual(5, triggerDates.count)
+        assertTriggerDate(triggerDates[0], year: 2022, month: 1, day: 24, hour: 9, minute: 00)
+        assertTriggerDate(triggerDates[1], year: 2022, month: 1, day: 25, hour: 9, minute: 00)
+        assertTriggerDate(triggerDates[2], year: 2022, month: 1, day: 26, hour: 9, minute: 00)
+        assertTriggerDate(triggerDates[3], year: 2022, month: 1, day: 27, hour: 9, minute: 00)
+        assertTriggerDate(triggerDates[4], year: 2022, month: 1, day: 28, hour: 9, minute: 00)
+    }
+
+    func test_scheduleNotificationsNotIncludingToday() throws {
+        let medicationReminder = MedicationReminder(reminderTime: try .init(hour: 9, minute: 0))
+        let startDate = try buildDate(year: 2022, month: 1, day: 23, hour: 8, minute: 23, second: 11)
+        Date.overrideCurrentDate(startDate)
+
+        let triggerDates = try medicationReminder.scheduleNotifications(includeToday: false)
+
+        XCTAssertEqual(5, triggerDates.count)
+        assertTriggerDate(triggerDates[0], year: 2022, month: 1, day: 24, hour: 9, minute: 00)
+        assertTriggerDate(triggerDates[1], year: 2022, month: 1, day: 25, hour: 9, minute: 00)
+        assertTriggerDate(triggerDates[2], year: 2022, month: 1, day: 26, hour: 9, minute: 00)
+        assertTriggerDate(triggerDates[3], year: 2022, month: 1, day: 27, hour: 9, minute: 00)
+        assertTriggerDate(triggerDates[4], year: 2022, month: 1, day: 28, hour: 9, minute: 00)
+    }
+
 
     // MARK: - Helpers
 

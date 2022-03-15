@@ -13,7 +13,7 @@ class MedicationTests: XCTestCase {
     override func tearDownWithError() throws {
     }
 
-    // MARK: initialize
+    // MARK: - initialize
 
     func test_initialize_medication() throws {
         let medicationId = MedicationId()
@@ -23,7 +23,7 @@ class MedicationTests: XCTestCase {
         XCTAssertEqual(name, medication.name)
     }
 
-    // MARK: recordAdministration
+    // MARK: - recordAdministration
 
     func test_recordAdministration_creates_a_new_administration_instances() {
         let medication = MedicationBuilder.aMedication().build()
@@ -53,175 +53,70 @@ class MedicationTests: XCTestCase {
         XCTAssertEqual(publishedEvent?.administrationDate, today)
     }
 
-    // MARK: scheduleReminderNotifications
+    // MARK: - scheduleReminderNotifications
 
     func test_scheduleReminderNotifications_notAdministeredToday() throws {
+        // Given
+        let reminderTime = try ReminderTime(hour: 9, minute: 15)
+        let medication = MedicationBuilder.aMedication()
+            .withRemindersEnabled(at: reminderTime)
+            .build()
         let now = try Date.factory(year: 2022, month: 1, day: 29, hour: 6, minute: 13, second: 34)
-        let reminderTime = try ReminderTime(hour: 9, minute: 15)
         Date.overrideCurrentDate(now)
-        let medication = MedicationBuilder.aMedication()
-            .withRemindersEnabled(at: reminderTime)
-            .build()
 
+        // When
         let notifications = try medication.scheduleReminderNotifications(wasAdministered: false)
 
-        XCTAssertEqual(6, notifications.count)
-        assertNotification(
-            notifications[0],
-            triggerDate: try .factory(year: 2022, month: 1, day: 29, hour: 9, minute: 15, second: 0),
-            medication: medication,
-            index: 0
-        )
-        assertNotification(
-            notifications[1],
-            triggerDate: try .factory(year: 2022, month: 1, day: 30, hour: 9, minute: 15, second: 0),
-            medication: medication,
-            index: 1
-        )
-        assertNotification(
-            notifications[2],
-            triggerDate: try .factory(year: 2022, month: 1, day: 31, hour: 9, minute: 15, second: 0),
-            medication: medication,
-            index: 2
-        )
-        assertNotification(
-            notifications[3],
-            triggerDate: try .factory(year: 2022, month: 2, day: 1, hour: 9, minute: 15, second: 0),
-            medication: medication,
-            index: 3
-        )
-        assertNotification(
-            notifications[4],
-            triggerDate: try .factory(year: 2022, month: 2, day: 2, hour: 9, minute: 15, second: 0),
-            medication: medication,
-            index: 4
-        )
-    }
-
-    func test_scheduleReminderNotifications_notAdministeredToday_currentTimeAfterReminderTime() throws {
-        let now = try Date.factory(year: 2022, month: 1, day: 29, hour: 11, minute: 13, second: 34)
-        let reminderTime = try ReminderTime(hour: 9, minute: 15)
-        Date.overrideCurrentDate(now)
-        let medication = MedicationBuilder.aMedication()
-            .withRemindersEnabled(at: reminderTime)
-            .build()
-
-        let notifications = try medication.scheduleReminderNotifications(wasAdministered: false)
-
-        XCTAssertEqual(5, notifications.count)
-        assertNotification(
-            notifications[0],
-            triggerDate: try .factory(year: 2022, month: 1, day: 30, hour: 9, minute: 15, second: 0),
-            medication: medication,
-            index: 0
-        )
-        assertNotification(
-            notifications[1],
-            triggerDate: try .factory(year: 2022, month: 1, day: 31, hour: 9, minute: 15, second: 0),
-            medication: medication,
-            index: 1
-        )
-        assertNotification(
-            notifications[2],
-            triggerDate: try .factory(year: 2022, month: 2, day: 1, hour: 9, minute: 15, second: 0),
-            medication: medication,
-            index: 2
-        )
-        assertNotification(
-            notifications[3],
-            triggerDate: try .factory(year: 2022, month: 2, day: 2, hour: 9, minute: 15, second: 0),
-            medication: medication,
-            index: 3
-        )
-        assertNotification(
-            notifications[4],
-            triggerDate: try .factory(year: 2022, month: 2, day: 3, hour: 9, minute: 15, second: 0),
-            medication: medication,
-            index: 4
-        )
+        // Then
+        XCTAssertEqual(notifications.first?.triggerDate, try .factory(year: 2022, month: 1, day: 29, hour: 9, minute: 15, second: 0))
+        for index in 0..<notifications.count {
+            assertNotification(
+                notifications[index],
+                notificationId: "\(medication.id)_\(index)",
+                medicationId: String(describing: medication.id),
+                body: "Have you taken your \(medication.name) today?"
+            )
+        }
     }
 
     func test_scheduleReminderNotifications_wasAdministeredToday() throws {
-        let now = try Date.factory(year: 2022, month: 1, day: 29, hour: 6, minute: 13, second: 34)
+        // Given
         let reminderTime = try ReminderTime(hour: 9, minute: 15)
-        Date.overrideCurrentDate(now)
         let medication = MedicationBuilder.aMedication()
             .withRemindersEnabled(at: reminderTime)
             .build()
+        let now = try Date.factory(year: 2022, month: 1, day: 29, hour: 6, minute: 13, second: 34)
+        Date.overrideCurrentDate(now)
 
+        // When
         let notifications = try medication.scheduleReminderNotifications(wasAdministered: true)
 
-        XCTAssertEqual(5, notifications.count)
-        assertNotification(
-            notifications[0],
-            triggerDate: try .factory(year: 2022, month: 1, day: 30, hour: 9, minute: 15, second: 0),
-            medication: medication,
-            index: 0
-        )
-        assertNotification(
-            notifications[1],
-            triggerDate: try .factory(year: 2022, month: 1, day: 31, hour: 9, minute: 15, second: 0),
-            medication: medication,
-            index: 1
-        )
-        assertNotification(
-            notifications[2],
-            triggerDate: try .factory(year: 2022, month: 2, day: 1, hour: 9, minute: 15, second: 0),
-            medication: medication,
-            index: 2
-        )
-        assertNotification(
-            notifications[3],
-            triggerDate: try .factory(year: 2022, month: 2, day: 2, hour: 9, minute: 15, second: 0),
-            medication: medication,
-            index: 3
-        )
-        assertNotification(
-            notifications[4],
-            triggerDate: try .factory(year: 2022, month: 2, day: 3, hour: 9, minute: 15, second: 0),
-            medication: medication,
-            index: 4
-        )
+        // Then
+        XCTAssertEqual(notifications.first?.triggerDate, try .factory(year: 2022, month: 1, day: 30, hour: 9, minute: 15, second: 0))
+        for index in 0..<notifications.count {
+            assertNotification(
+                notifications[index],
+                notificationId: "\(medication.id)_\(index)",
+                medicationId: String(describing: medication.id),
+                body: "Have you taken your \(medication.name) today?"
+            )
+        }
     }
 
     // MARK: Helpers
 
     private func assertNotification(
         _ notif: ReminderNotification,
-        triggerDate: Date,
-        medication: Medication,
-        index: Int,
+        notificationId: String,
+        medicationId: String,
+        body: String,
+//        triggerDate: Date,
         file: StaticString = #file,
         line: UInt = #line
     ) {
-        XCTAssertEqual(triggerDate, notif.triggerDate, file: file, line: line)
-        XCTAssertEqual("\(medication.id)_\(index)", notif.id, file: file, line: line)
-        XCTAssertEqual(medication.id.description, notif.medicationId, file: file, line: line)
-        XCTAssertEqual("Have you taken your \(medication.name) today?", notif.body, file: file, line: line)
-    }
-
-    private func assertTriggerDate(
-        _ date: Date,
-        year expectedYear: Int,
-        month expectedMonth: Int,
-        day expectedDay: Int,
-        hour expectedHour: Int,
-        minute expectedMinute: Int,
-        calendar: Calendar = Calendar.current,
-        file: StaticString = #file,
-        line: UInt = #line
-    ) {
-        let year = calendar.component(.year, from: date)
-        let month = calendar.component(.month, from: date)
-        let day = calendar.component(.day, from: date)
-        let hour = calendar.component(.hour, from: date)
-        let minute = calendar.component(.minute, from: date)
-        let second = calendar.component(.second, from: date)
-        XCTAssertEqual(expectedYear, year, file: file, line: line)
-        XCTAssertEqual(expectedMonth, month, file: file, line: line)
-        XCTAssertEqual(expectedDay, day, file: file, line: line)
-        XCTAssertEqual(expectedHour, hour, file: file, line: line)
-        XCTAssertEqual(expectedMinute, minute, file: file, line: line)
-        XCTAssertEqual(00, second, file: file, line: line)
+        XCTAssertEqual(notificationId, notif.id, file: file, line: line)
+        XCTAssertEqual(medicationId, notif.medicationId, file: file, line: line)
+        XCTAssertEqual(body, notif.body, file: file, line: line)
+//        XCTAssertEqual(triggerDate, notif.triggerDate, file: file, line: line)
     }
 }

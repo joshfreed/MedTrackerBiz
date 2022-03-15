@@ -1,7 +1,3 @@
-//
-// Created by Josh Freed on 1/29/22.
-//
-
 import Foundation
 
 extension Date {
