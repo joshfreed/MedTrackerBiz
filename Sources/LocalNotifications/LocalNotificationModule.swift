@@ -20,7 +20,7 @@ public class LocalNotificationModule: MedTrackerModule {
         case .live:
             container.register(.unique) { LocalNotificationService() }.implements(NotificationService.self)
         case .test:
-            container.register(.unique) { EmptyNotificationService() }.implements(NotificationService.self)
+            container.register(.unique) { JsonNotificationStorage() }.implements(NotificationService.self)
         case .preview:
             container.register(.unique) { EmptyNotificationService() }.implements(NotificationService.self)
         }
