@@ -6,6 +6,8 @@ import MedicationContext
 class DefaultDomainEvents: MedTrackerBackEndEvents {
     private var cancellables = Set<AnyCancellable>()
 
+    // MARK: Medication Events
+
     private let newMedicationTrackedSubject = PassthroughSubject<NewMedicationTracked, Never>()
     var newMedicationTracked: AnyPublisher<NewMedicationTracked, Never> {
         newMedicationTrackedSubject.eraseToAnyPublisher()
@@ -21,11 +23,15 @@ class DefaultDomainEvents: MedTrackerBackEndEvents {
         administrationRemovedSubject.eraseToAnyPublisher()
     }
 
+    // MARK: init
+
     init() {
         subscribeToNotifications()
     }
 
     private func subscribeToNotifications() {
+        // Medication Events
+
         NotificationCenter.default
             .publisher(for: .newMedicationTracked, object: nil)
             .compactMap { $0.userInfo?["domainEvent"] as? NewMedicationTracked }
@@ -47,6 +53,7 @@ class DefaultDomainEvents: MedTrackerBackEndEvents {
 }
 
 extension Notification.Name {
+    // Medication Events
     static let newMedicationTracked = Notification.Name("NewMedicationTracked")
     static let administrationRecorded = Notification.Name("AdministrationRecorded")
     static let administrationRemoved = Notification.Name("AdministrationRemoved")

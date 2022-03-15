@@ -11,12 +11,6 @@ extension LocalNotificationService: NotificationService {
         try await UNUserNotificationCenter.current().add(notification.toNotificationRequest())
     }
 
-    public func add(notifications: [ReminderNotification]) async throws {
-        for notification in notifications {
-            try await add(notification: notification)
-        }
-    }
-
     public func remove(notification id: String) {
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [id])
     }

@@ -37,6 +37,8 @@ public class BackEndModule: MedTrackerModule {
             .implements(GetTrackedMedicationsUseCase.self)
 
         container.register { NotificationSchedulingEventHandlers.NewMedicationTrackedHandler(useCase: $0) }
+        container.register { NotificationSchedulingEventHandlers.AdministrationRecordedHandler(useCase: $0) }
+        container.register { NotificationSchedulingEventHandlers.AdministrationRemovedHandler(useCase: $0) }
 
         container.register(.singleton) {
             RemindersService(scheduler: $0)
@@ -63,8 +65,15 @@ public class BackEndModule: MedTrackerModule {
 
     public func bootstrap(env: XcodeEnvironment) {
         DomainEventPublisher.shared.subscribe(DomainEventForwarder())
+        addReminderSubscribers()
+    }
 
+    private func addReminderSubscribers() {
         let handler1 = try! JFServices.resolve() as NotificationSchedulingEventHandlers.NewMedicationTrackedHandler
+        let handler2 = try! JFServices.resolve() as NotificationSchedulingEventHandlers.AdministrationRecordedHandler
+        let handler3 = try! JFServices.resolve() as NotificationSchedulingEventHandlers.AdministrationRemovedHandler
         DomainEventPublisher.shared.subscribe(handler1)
+        DomainEventPublisher.shared.subscribe(handler2)
+        DomainEventPublisher.shared.subscribe(handler3)
     }
 }
