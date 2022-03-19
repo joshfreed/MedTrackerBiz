@@ -11,6 +11,10 @@ extension LocalNotificationService: NotificationService {
         try await UNUserNotificationCenter.current().add(notification.toNotificationRequest())
     }
 
+    public func removeAll() {
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+    }
+
     public func remove(notification id: String) {
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [id])
     }

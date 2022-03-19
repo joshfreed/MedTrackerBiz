@@ -12,4 +12,5 @@ public protocol MedTrackerBackEnd {
     func recordAdministration(medicationId: String) async throws
     func recordAdministration(medicationName: String) async throws
     func removeAdministration(medicationId: String) async throws
+    func scheduleReminderNotifications() async throws
 }

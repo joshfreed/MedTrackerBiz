@@ -17,7 +17,8 @@ public class BackEndModule: MedTrackerModule {
                 getTrackedMedicationsQuery: $1,
                 getTrackedMedications: $2,
                 recordAdministration: $3,
-                removeAdministration: $4
+                removeAdministration: $4,
+                scheduleRemindersUseCase: $5
             )
         }
         .implements(MedTrackerBackEnd.self)

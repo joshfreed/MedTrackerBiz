@@ -9,19 +9,22 @@ class DefaultBackEnd: MedTrackerBackEnd {
     private let getTrackedMedicationsUseCase: GetTrackedMedicationsUseCase
     private let recordAdministrationUseCase: RecordAdministrationUseCase
     private let removeAdministrationUseCase: RemoveAdministrationUseCase
+    private let scheduleRemindersUseCase: ScheduleReminderNotificationsUseCase
 
     init(
         trackMedication: TrackMedicationUseCase,
         getTrackedMedicationsQuery: GetTrackedMedicationsContinuousQuery,
         getTrackedMedications: GetTrackedMedicationsUseCase,
         recordAdministration: RecordAdministrationUseCase,
-        removeAdministration: RemoveAdministrationUseCase
+        removeAdministration: RemoveAdministrationUseCase,
+        scheduleRemindersUseCase: ScheduleReminderNotificationsUseCase
     ) {
         self.trackMedication = trackMedication
         self.getTrackedMedicationsQuery = getTrackedMedicationsQuery
         self.getTrackedMedicationsUseCase = getTrackedMedications
         self.recordAdministrationUseCase = recordAdministration
         self.removeAdministrationUseCase = removeAdministration
+        self.scheduleRemindersUseCase = scheduleRemindersUseCase
     }
 
     func trackMedication(name: String, administrationTime: Int) async throws {
@@ -47,5 +50,9 @@ class DefaultBackEnd: MedTrackerBackEnd {
 
     func removeAdministration(medicationId: String) async throws {
         try await removeAdministrationUseCase.handle(RemoveAdministrationCommand(medicationId: medicationId))
+    }
+
+    func scheduleReminderNotifications() async throws {
+        try await scheduleRemindersUseCase.handle(.init())
     }
 }

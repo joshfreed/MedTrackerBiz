@@ -27,20 +27,25 @@ class JsonNotificationStorage {
 }
 
 extension JsonNotificationStorage: NotificationService {
-    func add(notification: ReminderNotification) async throws {
+    func add(notification: ReminderNotification) throws {
         notifications.append(notification)
         try save()
     }
 
-    func remove(notification id: String) {
-        notifications = notifications.filter { $0.id == id }
-        try! save()
+    func removeAll() throws {
+        notifications = []
+        try save()
     }
 
-    func remove(notificationsMatchingIds ids: [String]) {
+    func remove(notification id: String) throws {
+        notifications = notifications.filter { $0.id == id }
+        try save()
+    }
+
+    func remove(notificationsMatchingIds ids: [String]) throws {
         for id in ids {
             notifications = notifications.filter { $0.id == id }
         }
-        try! save()
+        try save()
     }
 }
