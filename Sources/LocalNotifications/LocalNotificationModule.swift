@@ -30,6 +30,12 @@ public class LocalNotificationModule: MedTrackerModule {
 
         configureNotifications()
 
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { (granted, error) in
+            if !granted {
+                print("user has declined notifications")
+            }
+        }
+
         localNotificationHandler.register()
     }
 
