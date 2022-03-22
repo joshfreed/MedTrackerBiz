@@ -1,26 +1,25 @@
 import Foundation
 import UserNotifications
 import MedicationContext
+import OSLog
 
 class LocalNotificationService {
+    let logger: Logger
 
+    init(logger: Logger) {
+        self.logger = logger
+    }
 }
 
 extension LocalNotificationService: NotificationService {
     public func add(notification: ReminderNotification) async throws {
+        logger.debug("Added local notification to trigger at: \(notification.triggerDate)")
         try await UNUserNotificationCenter.current().add(notification.toNotificationRequest())
     }
 
     public func removeAll() {
+        logger.debug("Removing all pending notifications")
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
-    }
-
-    public func remove(notification id: String) {
-        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [id])
-    }
-
-    public func remove(notificationsMatchingIds ids: [String]) {
-        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ids)
     }
 }
 

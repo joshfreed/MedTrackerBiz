@@ -36,16 +36,4 @@ extension JsonNotificationStorage: NotificationService {
         notifications = []
         try save()
     }
-
-    func remove(notification id: String) throws {
-        notifications = notifications.filter { $0.id == id }
-        try save()
-    }
-
-    func remove(notificationsMatchingIds ids: [String]) throws {
-        for id in ids {
-            notifications = notifications.filter { $0.id == id }
-        }
-        try save()
-    }
 }

@@ -14,7 +14,7 @@ public enum NotificationSchedulingEventHandlers {
         override public func handle(event: NewMedicationTracked) {
             Task {
                 do {
-                    try await remindersService.handle(ScheduleReminderNotificationsCommand(medicationId: event.id))
+                    try await remindersService.handle(ScheduleReminderNotificationsCommand())
                 } catch {
                     fatalError()
                 }
@@ -33,7 +33,7 @@ public enum NotificationSchedulingEventHandlers {
         override public func handle(event: AdministrationRecorded) {
             Task {
                 do {
-                    try await remindersService.handle(ScheduleReminderNotificationsCommand(medicationId: event.medicationId.description))
+                    try await remindersService.handle(ScheduleReminderNotificationsCommand())
                 } catch {
                     fatalError()
                 }
@@ -52,7 +52,7 @@ public enum NotificationSchedulingEventHandlers {
         override public func handle(event: AdministrationRemoved) {
             Task {
                 do {
-                    try await remindersService.handle(ScheduleReminderNotificationsCommand(medicationId: event.medicationId.description))
+                    try await remindersService.handle(ScheduleReminderNotificationsCommand())
                 } catch {
                     fatalError()
                 }
@@ -71,7 +71,7 @@ public enum NotificationSchedulingEventHandlers {
         override public func handle(event: MedicationUpdated) {
             Task {
                 do {
-                    try await remindersService.handle(ScheduleReminderNotificationsCommand(medicationId: event.id))
+                    try await remindersService.handle(ScheduleReminderNotificationsCommand())
                 } catch {
                     fatalError()
                 }

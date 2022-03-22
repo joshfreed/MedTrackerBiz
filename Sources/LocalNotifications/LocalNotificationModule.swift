@@ -6,6 +6,7 @@ import JFLib_Services
 import MTCommon
 import MTBackEndCore
 import MedicationContext
+import OSLog
 
 public class LocalNotificationModule: MedTrackerModule {
     private var cancellables = Set<AnyCancellable>()
@@ -16,7 +17,7 @@ public class LocalNotificationModule: MedTrackerModule {
     public func registerServices(env: XcodeEnvironment, container: DependencyContainer) {
         switch env {
         case .live:
-            container.register(.unique) { LocalNotificationService() }.implements(NotificationService.self)
+            container.register(.unique) { LocalNotificationService(logger: Logger.localNotifications) }.implements(NotificationService.self)
         case .test:
             container.register(.unique) { JsonNotificationStorage() }.implements(NotificationService.self)
         case .preview:
@@ -56,4 +57,10 @@ public class LocalNotificationModule: MedTrackerModule {
         let notificationCenter = UNUserNotificationCenter.current()
         notificationCenter.setNotificationCategories([medicationReminderCategory, medCheckInCategory])
     }
+}
+
+extension Logger {
+    private static var subsystem = Bundle.main.bundleIdentifier!
+
+    static let localNotifications = Logger(subsystem: subsystem, category: "localNotifications")
 }

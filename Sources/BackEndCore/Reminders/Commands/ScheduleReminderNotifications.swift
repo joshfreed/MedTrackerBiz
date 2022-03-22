@@ -1,13 +1,5 @@
 import Foundation
 
 public struct ScheduleReminderNotificationsCommand {
-    public let medicationId: String
-
-    public init(medicationId: String) {
-        self.medicationId = medicationId
-    }
-}
-
-public struct ScheduleAllReminderNotificationsCommand {
     public init() {}
 }
