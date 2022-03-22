@@ -182,3 +182,50 @@ extension MedicationService {
         DomainEventPublisher.shared.publishPendingEvents()
     }
 }
+
+// MARK: - GetEditableMedication
+
+extension MedicationService {
+    public func handle(_ query: GetEditableMedicationQuery) async throws -> GetEditableMedicationResponse {
+        guard let medicationId = MedicationId(uuidString: query.medicationId) else {
+            throw MedicationServiceErrors.invalidMedicationId
+        }
+
+        guard let medication = try await medications.getById(medicationId) else {
+            throw MedicationServiceErrors.medicationNotFound
+        }
+
+        let response = GetEditableMedicationResponse(
+            name: medication.name,
+            reminderTime: medication.reminder?.reminderTime.toDate()
+        )
+
+        return response
+    }
+}
+
+// MARK: - UpdateMedication
+
+extension MedicationService {
+    public func handle(_ command: UpdateMedicationCommand) async throws {
+        guard let medicationId = MedicationId(uuidString: command.medicationId) else {
+            throw MedicationServiceErrors.invalidMedicationId
+        }
+
+        guard var medication = try await medications.getById(medicationId) else {
+            throw MedicationServiceErrors.medicationNotFound
+        }
+
+        if let reminderTime = command.reminderTime {
+            medication.enableReminderNotifications(at: .init(date: reminderTime))
+        } else {
+            medication.disableReminderNotifications()
+        }
+
+        try await medications.update(medication)
+        try await medications.save()
+
+        DomainEvents.add(MedicationUpdated(id: command.medicationId))
+        DomainEventPublisher.shared.publishPendingEvents()
+    }
+}

@@ -5,4 +5,5 @@ public protocol MedicationRepository {
     func getAll() async throws -> [Medication]
     func getById(_ id: MedicationId) async throws -> Medication?
     func save() async throws
+    func update(_ medication: Medication) async throws
 }

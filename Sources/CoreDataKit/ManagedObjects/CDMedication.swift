@@ -20,6 +20,9 @@ public class CDMedication: NSManagedObject {
         if let medicationReminder = medication.reminder {
             reminder = CDMedicationReminder(context: managedObjectContext!)
             reminder?.fromDomainModel(medicationReminder)
+        } else if let cdReminder = reminder {
+            managedObjectContext?.delete(cdReminder)
+            reminder = nil
         }
     }
 

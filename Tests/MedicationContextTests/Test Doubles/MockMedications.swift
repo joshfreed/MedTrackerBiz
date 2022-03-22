@@ -59,4 +59,9 @@ class MockMedications: MedicationRepository {
     func verify_save_wasCalled(file: StaticString = #filePath, line: UInt = #line) {
         XCTAssertTrue(saveWasCalled, "save was not called", file: file, line: line)
     }
+
+    // MARK: update
+    
+    func update(_ medication: Medication) async throws {
+    }
 }

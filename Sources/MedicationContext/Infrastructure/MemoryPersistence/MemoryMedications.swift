@@ -16,4 +16,6 @@ public class MemoryMedications: MedicationRepository {
     }
 
     public func save() async throws {}
+
+    public func update(_ medication: Medication) {}
 }

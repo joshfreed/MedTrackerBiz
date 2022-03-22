@@ -20,6 +20,7 @@ public class BackEndModule: MedTrackerModule {
         container.register { NotificationSchedulingEventHandlers.NewMedicationTrackedHandler(remindersService: $0) }
         container.register { NotificationSchedulingEventHandlers.AdministrationRecordedHandler(remindersService: $0) }
         container.register { NotificationSchedulingEventHandlers.AdministrationRemovedHandler(remindersService: $0) }
+        container.register { NotificationSchedulingEventHandlers.MedicationUpdatedHandler(remindersService: $0) }
 
         container.register {
             DailyReminderNotificationScheduler(notificationService: $0, medicationRepository: $1, administrationRepository: $2)
@@ -49,8 +50,10 @@ public class BackEndModule: MedTrackerModule {
         let handler1 = try! JFServices.resolve() as NotificationSchedulingEventHandlers.NewMedicationTrackedHandler
         let handler2 = try! JFServices.resolve() as NotificationSchedulingEventHandlers.AdministrationRecordedHandler
         let handler3 = try! JFServices.resolve() as NotificationSchedulingEventHandlers.AdministrationRemovedHandler
+        let handler4 = try! JFServices.resolve() as NotificationSchedulingEventHandlers.MedicationUpdatedHandler
         DomainEventPublisher.shared.subscribe(handler1)
         DomainEventPublisher.shared.subscribe(handler2)
         DomainEventPublisher.shared.subscribe(handler3)
+        DomainEventPublisher.shared.subscribe(handler4)
     }
 }

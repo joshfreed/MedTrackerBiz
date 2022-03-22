@@ -59,4 +59,23 @@ public enum NotificationSchedulingEventHandlers {
             }
         }
     }
+
+    public class MedicationUpdatedHandler: DomainEventHandler<MedicationUpdated> {
+        let remindersService: RemindersService
+
+        public init(remindersService: RemindersService) {
+            self.remindersService = remindersService
+            super.init()
+        }
+
+        override public func handle(event: MedicationUpdated) {
+            Task {
+                do {
+                    try await remindersService.handle(ScheduleReminderNotificationsCommand(medicationId: event.id))
+                } catch {
+                    fatalError()
+                }
+            }
+        }
+    }
 }

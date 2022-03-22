@@ -36,4 +36,12 @@ class DefaultBackEnd: MedTrackerBackEnd {
     func scheduleReminderNotifications() async throws {
         try await remindersService.handle(.init())
     }
+
+    func getEditableMedication(by id: String) async throws -> GetEditableMedicationResponse {
+        try await medicationService.handle(.init(medicationId: id))
+    }
+
+    func updateMedication(_ command: UpdateMedicationCommand) async throws {
+        try await medicationService.handle(command)
+    }
 }
