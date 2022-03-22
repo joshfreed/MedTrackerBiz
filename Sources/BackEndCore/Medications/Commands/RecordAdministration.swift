@@ -16,11 +16,6 @@ public struct RecordAdministrationByNameCommand: Equatable {
     }
 }
 
-public protocol RecordAdministrationUseCase {
-    func handle(_ command: RecordAdministrationCommand) async throws
-    func handle(_ command: RecordAdministrationByNameCommand) async throws
-}
-
 public enum RecordAdministrationError: Error {
     case invalidMedicationId
     case medicationNotFound

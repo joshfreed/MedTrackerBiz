@@ -2,6 +2,7 @@ import XCTest
 @testable import JFLib_Testing
 import JFLib_DomainEvents
 @testable import MedicationContext
+import MTBackEndCore
 
 class MedicationTests: XCTestCase {
     let today = Date()
@@ -48,8 +49,8 @@ class MedicationTests: XCTestCase {
 
         // Then
         XCTAssertNotNil(publishedEvent)
-        XCTAssertEqual(publishedEvent?.id, administration.id)
-        XCTAssertEqual(publishedEvent?.medicationId, medication.id)
+        XCTAssertEqual(publishedEvent?.id, administration.id.description)
+        XCTAssertEqual(publishedEvent?.medicationId, medication.id.description)
         XCTAssertEqual(publishedEvent?.administrationDate, today)
     }
 

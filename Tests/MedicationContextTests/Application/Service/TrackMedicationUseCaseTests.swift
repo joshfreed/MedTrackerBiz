@@ -1,8 +1,9 @@
 import XCTest
+import MTBackEndCore
 @testable import MedicationContext
 
 class TrackMedicationUseCaseTests: XCTestCase {
-    var sut: TrackMedicationUseCase!
+    var sut: MedicationService!
     let administrations = MockAdministrations()
     let medications = MockMedications()
 

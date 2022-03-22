@@ -11,8 +11,3 @@ public struct ScheduleReminderNotificationsCommand {
 public struct ScheduleAllReminderNotificationsCommand {
     public init() {}
 }
-
-public protocol ScheduleReminderNotificationsUseCase {
-    func handle(_ command: ScheduleReminderNotificationsCommand) async throws
-    func handle(_ command: ScheduleAllReminderNotificationsCommand) async throws
-}

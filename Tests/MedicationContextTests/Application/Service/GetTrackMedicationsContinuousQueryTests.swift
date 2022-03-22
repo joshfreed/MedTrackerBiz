@@ -1,6 +1,7 @@
 import XCTest
 import Combine
 @testable import MedicationContext
+import MTBackEndCore
 
 class GetTrackMedicationsContinuousQueryTests: XCTestCase {
     var sut: MedicationService!

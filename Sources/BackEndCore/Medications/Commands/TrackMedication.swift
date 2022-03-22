@@ -17,7 +17,3 @@ public struct TrackMedicationCommand {
         self.administrationTime = administrationTime
     }
 }
-
-public protocol TrackMedicationUseCase {
-    func handle(_ command: TrackMedicationCommand) async throws
-}

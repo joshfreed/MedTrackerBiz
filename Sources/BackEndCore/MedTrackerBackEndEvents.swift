@@ -1,6 +1,5 @@
 import Foundation
 import Combine
-import MedicationContext
 
 public protocol MedTrackerBackEndEvents {
     var newMedicationTracked: AnyPublisher<NewMedicationTracked, Never> { get }

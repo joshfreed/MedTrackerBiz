@@ -8,10 +8,6 @@ public struct RemoveAdministrationCommand {
     }
 }
 
-public protocol RemoveAdministrationUseCase {
-    func handle(_ command: RemoveAdministrationCommand) async throws
-}
-
 public enum RemoveAdministrationError: Error {
     case invalidMedicationId
     case medicationNotFound

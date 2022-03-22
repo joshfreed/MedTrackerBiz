@@ -1,19 +1,20 @@
 import Foundation
 import JFLib_DomainEvents
+import MTBackEndCore
 
 public enum NotificationSchedulingEventHandlers {
     public class NewMedicationTrackedHandler: DomainEventHandler<NewMedicationTracked> {
-        let useCase: ScheduleReminderNotificationsUseCase
+        let remindersService: RemindersService
 
-        public init(useCase: ScheduleReminderNotificationsUseCase) {
-            self.useCase = useCase
+        public init(remindersService: RemindersService) {
+            self.remindersService = remindersService
             super.init()
         }
 
         override public func handle(event: NewMedicationTracked) {
             Task {
                 do {
-                    try await useCase.handle(ScheduleReminderNotificationsCommand(medicationId: event.id))
+                    try await remindersService.handle(ScheduleReminderNotificationsCommand(medicationId: event.id))
                 } catch {
                     fatalError()
                 }
@@ -22,17 +23,17 @@ public enum NotificationSchedulingEventHandlers {
     }
 
     public class AdministrationRecordedHandler: DomainEventHandler<AdministrationRecorded> {
-        let useCase: ScheduleReminderNotificationsUseCase
+        let remindersService: RemindersService
 
-        public init(useCase: ScheduleReminderNotificationsUseCase) {
-            self.useCase = useCase
+        public init(remindersService: RemindersService) {
+            self.remindersService = remindersService
             super.init()
         }
 
         override public func handle(event: AdministrationRecorded) {
             Task {
                 do {
-                    try await useCase.handle(ScheduleReminderNotificationsCommand(medicationId: event.medicationId.description))
+                    try await remindersService.handle(ScheduleReminderNotificationsCommand(medicationId: event.medicationId.description))
                 } catch {
                     fatalError()
                 }
@@ -41,17 +42,17 @@ public enum NotificationSchedulingEventHandlers {
     }
 
     public class AdministrationRemovedHandler: DomainEventHandler<AdministrationRemoved> {
-        let useCase: ScheduleReminderNotificationsUseCase
+        let remindersService: RemindersService
 
-        public init(useCase: ScheduleReminderNotificationsUseCase) {
-            self.useCase = useCase
+        public init(remindersService: RemindersService) {
+            self.remindersService = remindersService
             super.init()
         }
 
         override public func handle(event: AdministrationRemoved) {
             Task {
                 do {
-                    try await useCase.handle(ScheduleReminderNotificationsCommand(medicationId: event.medicationId.description))
+                    try await remindersService.handle(ScheduleReminderNotificationsCommand(medicationId: event.medicationId.description))
                 } catch {
                     fatalError()
                 }

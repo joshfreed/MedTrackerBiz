@@ -11,8 +11,6 @@ public class LocalNotificationModule: MedTrackerModule {
     private var cancellables = Set<AnyCancellable>()
     private let localNotificationHandler = LocalNotificationHandler()
 
-    private var domainEvents: MedTrackerBackEndEvents { try! JFServices.resolve() }
-
     public init() {}
 
     public func registerServices(env: XcodeEnvironment, container: DependencyContainer) {

@@ -1,9 +1,10 @@
 import XCTest
 @testable import JFLib_Testing
+import MTBackEndCore
 @testable import MedicationContext
 
 class RecordAdministrationUseCaseTests: XCTestCase {
-    var sut: RecordAdministrationUseCase!
+    var sut: MedicationService!
     let administrations = MockAdministrations()
     let medications = MockMedications()
     let today = Date()

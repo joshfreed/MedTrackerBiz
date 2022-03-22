@@ -1,6 +1,7 @@
 import Foundation
+import MTBackEndCore
 
-public class RemindersService: ScheduleReminderNotificationsUseCase {
+public class RemindersService {
     private let scheduler: DailyReminderNotificationScheduler
 
     public init(scheduler: DailyReminderNotificationScheduler) {

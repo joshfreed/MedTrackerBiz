@@ -1,5 +1,6 @@
 import Foundation
 import JFLib_DomainEvents
+import MTBackEndCore
 
 /// Represents a medication that must be administered
 public struct Medication: Equatable, Codable {
@@ -30,8 +31,8 @@ public struct Medication: Equatable, Codable {
     func recordAdministration(on date: Date) -> Administration {
         let administration = Administration(medicationId: id)
         DomainEvents.add(AdministrationRecorded(
-            id: administration.id,
-            medicationId: id,
+            id: administration.id.description,
+            medicationId: id.description,
             administrationDate: administration.administrationDate,
             medicationName: name
         ))

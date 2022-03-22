@@ -32,7 +32,9 @@ let package = Package(
             path: "Sources/Common"),
         .target(
             name: "MTBackEndCore",
-            dependencies: ["MedicationContext"],
+            dependencies: [
+                .product(name: "JFLib.DomainEvents", package: "JFLib"),
+            ],
             path: "Sources/BackEndCore"),
         .target(
             name: "MTDefaultBackEnd",
@@ -49,6 +51,7 @@ let package = Package(
             dependencies: [
                 .product(name: "JFLib.Date", package: "JFLib"),
                 .product(name: "JFLib.DomainEvents", package: "JFLib"),
+                "MTBackEndCore"
             ]),
         .testTarget(
             name: "MedicationContextTests",

@@ -1,4 +1,5 @@
 import XCTest
+import MTBackEndCore
 @testable import MedicationContext
 
 class GetTrackedMedicationsUseCaseTests: XCTestCase {

@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 import JFLib_DomainEvents
+import MTBackEndCore
 
 public class MedicationService {
     private let medications: MedicationRepository
@@ -36,9 +37,16 @@ public class MedicationService {
     }
 }
 
-// MARK: - TrackMedicationUseCase
+// MARK: - Errors
 
-extension MedicationService: TrackMedicationUseCase {
+enum MedicationServiceErrors: Error {
+    case invalidMedicationId
+    case medicationNotFound
+}
+
+// MARK: - TrackMedication
+
+extension MedicationService {
     public func handle(_ command: TrackMedicationCommand) async throws {
         DomainEventPublisher.shared.subscribe(DomainEventSubscriber<NewMedicationTracked> { domainEvent in
             self.publishCurrentValue(of: GetTrackedMedicationsQuery(date: Date.current))
@@ -60,9 +68,9 @@ extension MedicationService: TrackMedicationUseCase {
     }
 }
 
-// MARK: - GetTrackedMedicationsContinuousQuery
+// MARK: - GetTrackedMedications
 
-extension MedicationService: GetTrackedMedicationsContinuousQuery {
+extension MedicationService {
     public func subscribe(_ query: GetTrackedMedicationsQuery) -> AnyPublisher<GetTrackedMedicationsResponse, Error> {
         var subject: CurrentValueSubject<GetTrackedMedicationsResponse?, Error>
 
@@ -76,11 +84,7 @@ extension MedicationService: GetTrackedMedicationsContinuousQuery {
 
         return subject.compactMap { $0 }.eraseToAnyPublisher()
     }
-}
 
-// MARK: - GetTrackedMedicationsUseCase
-
-extension MedicationService: GetTrackedMedicationsUseCase {
     public func handle(_ query: GetTrackedMedicationsQuery) async throws -> GetTrackedMedicationsResponse {
         let medications = try await medications.getAll()
         let responseMedications = try await map(models: medications, date: query.date)
@@ -103,9 +107,9 @@ extension MedicationService: GetTrackedMedicationsUseCase {
     }
 }
 
-// MARK: - RecordAdministrationUseCase
+// MARK: - RecordAdministration
 
-extension MedicationService: RecordAdministrationUseCase {
+extension MedicationService {
     public func handle(_ command: RecordAdministrationCommand) async throws {
         guard let medicationId = MedicationId(uuidString: command.medicationId) else {
             throw RecordAdministrationError.invalidMedicationId
@@ -147,9 +151,9 @@ extension MedicationService: RecordAdministrationUseCase {
     }
 }
 
-// MARK: - RemoveAdministrationUseCase
+// MARK: - RemoveAdministration
 
-extension MedicationService: RemoveAdministrationUseCase {
+extension MedicationService {
     public func handle(_ command: RemoveAdministrationCommand) async throws {
         DomainEventPublisher.shared.subscribe(DomainEventSubscriber<AdministrationRemoved> { domainEvent in
             self.publishCurrentValue(of: GetTrackedMedicationsQuery(date: Date.current))

@@ -11,39 +11,15 @@ public class BackEndModule: MedTrackerModule {
     public init() {}
 
     public func registerServices(env: XcodeEnvironment, container: DependencyContainer) {
-        container.register(.singleton) {
-            DefaultBackEnd(
-                trackMedication: $0,
-                getTrackedMedicationsQuery: $1,
-                getTrackedMedications: $2,
-                recordAdministration: $3,
-                removeAdministration: $4,
-                scheduleRemindersUseCase: $5
-            )
-        }
-        .implements(MedTrackerBackEnd.self)
-
+        container.register(.singleton) { DefaultBackEnd() }.implements(MedTrackerBackEnd.self)
         container.register(.singleton) { DefaultDomainEvents() }.implements(MedTrackerBackEndEvents.self)
 
-        container
-            .register(.singleton) {
-                MedicationService(medications: $0, administrations: $1)
-            }
-            .implements(
-                GetTrackedMedicationsContinuousQuery.self,
-                RecordAdministrationUseCase.self,
-                RemoveAdministrationUseCase.self,
-                TrackMedicationUseCase.self
-            )
-            .implements(GetTrackedMedicationsUseCase.self)
+        container.register(.singleton) { MedicationService(medications: $0, administrations: $1) }
+        container.register(.singleton) { RemindersService(scheduler: $0) }
 
-        container.register { NotificationSchedulingEventHandlers.NewMedicationTrackedHandler(useCase: $0) }
-        container.register { NotificationSchedulingEventHandlers.AdministrationRecordedHandler(useCase: $0) }
-        container.register { NotificationSchedulingEventHandlers.AdministrationRemovedHandler(useCase: $0) }
-
-        container.register(.singleton) {
-            RemindersService(scheduler: $0)
-        }.implements(ScheduleReminderNotificationsUseCase.self)
+        container.register { NotificationSchedulingEventHandlers.NewMedicationTrackedHandler(remindersService: $0) }
+        container.register { NotificationSchedulingEventHandlers.AdministrationRecordedHandler(remindersService: $0) }
+        container.register { NotificationSchedulingEventHandlers.AdministrationRemovedHandler(remindersService: $0) }
 
         container.register {
             DailyReminderNotificationScheduler(notificationService: $0, medicationRepository: $1, administrationRepository: $2)
