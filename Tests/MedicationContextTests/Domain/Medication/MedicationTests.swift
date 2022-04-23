@@ -104,6 +104,22 @@ class MedicationTests: XCTestCase {
         }
     }
 
+    // MARK: - disableReminderNotifications
+
+    func test_disableReminderNotifications() throws {
+        // Given
+        let reminderTime = try ReminderTime(hour: 9, minute: 15)
+        var medication = MedicationBuilder.aMedication()
+            .withRemindersEnabled(at: reminderTime)
+            .build()
+
+        // When
+        medication.disableReminderNotifications()
+
+        // Then
+        XCTAssertNil(medication.reminder)
+    }
+
     // MARK: Helpers
 
     private func assertNotification(

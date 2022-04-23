@@ -5,9 +5,8 @@ public struct ReminderTime: Equatable, Codable {
     public let minute: Int
 
     public init(hour: Int, minute: Int) throws {
-//        guard administrationTime >= 0 && administrationTime < 24 else {
-//            throw MedicationError.invalidAdministrationTime
-//        }
+        guard hour >= 0 && hour < 24 else { throw Errors.invalidHour }
+        guard minute >= 0 && minute < 60 else { throw Errors.invalidMinute }
 
         self.hour = hour
         self.minute = minute
@@ -27,5 +26,12 @@ public struct ReminderTime: Equatable, Codable {
 
     func toDate() -> Date {
         Calendar.current.date(from: .init(hour: hour, minute: minute, second: 0))!
+    }
+}
+
+extension ReminderTime {
+    enum Errors: Error {
+        case invalidHour
+        case invalidMinute
     }
 }
