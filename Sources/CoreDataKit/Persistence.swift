@@ -1,4 +1,5 @@
 import CoreData
+import OSLog
 
 public struct PersistenceController {
     public static let shared = PersistenceController()
@@ -59,4 +60,9 @@ public extension URL {
         return fileContainer.appendingPathComponent("\(databaseName).sqlite")
     }
 
+}
+
+extension Logger {
+    private static var subsystem = Bundle.main.bundleIdentifier!
+    static let coreData = Logger(subsystem: subsystem, category: "coreData")
 }

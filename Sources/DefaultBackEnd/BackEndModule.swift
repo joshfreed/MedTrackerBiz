@@ -6,6 +6,7 @@ import MTCommon
 import MTBackEndCore
 import MedicationContext
 import CoreDataKit
+import OSLog
 
 public class BackEndModule: MedTrackerModule {
     public init() {}
@@ -14,7 +15,7 @@ public class BackEndModule: MedTrackerModule {
         container.register(.singleton) { DefaultBackEnd() }.implements(MedTrackerBackEnd.self)
         container.register(.singleton) { DefaultDomainEvents() }.implements(MedTrackerBackEndEvents.self)
 
-        container.register(.singleton) { MedicationService(medications: $0, administrations: $1) }
+        container.register(.singleton) { MedicationService(medications: $0, administrations: $1, logger: Logger.backEnd) }
         container.register(.singleton) { RemindersService(scheduler: $0) }
 
         container.register { NotificationSchedulingEventHandlers.NewMedicationTrackedHandler(remindersService: $0) }
@@ -56,4 +57,10 @@ public class BackEndModule: MedTrackerModule {
         DomainEventPublisher.shared.subscribe(handler3)
         DomainEventPublisher.shared.subscribe(handler4)
     }
+}
+
+extension Logger {
+    private static var subsystem = Bundle.main.bundleIdentifier!
+
+    static let backEnd = Logger(subsystem: subsystem, category: "backEnd")
 }

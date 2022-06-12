@@ -1,6 +1,7 @@
 import Foundation
 import CoreData
 import MedicationContext
+import OSLog
 
 @objc(CDMedication)
 public class CDMedication: NSManagedObject {
@@ -27,9 +28,14 @@ public class CDMedication: NSManagedObject {
     }
 
     func toJSON() -> [String: Any] {
+        guard let id = id, let name = name else {
+            Logger.coreData.error("Got nil properties in CDMedication that should not be nil")
+            return [:]
+        }
+
         var values: [String: Any] = [
-            "id": ["uuid": id!.uuidString],
-            "name": name!,
+            "id": ["uuid": id.uuidString],
+            "name": name,
         ]
 
         if let reminder = reminder {

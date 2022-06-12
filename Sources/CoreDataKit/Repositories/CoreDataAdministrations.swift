@@ -10,8 +10,11 @@ public class CoreDataAdministrations: AdministrationRepository {
     }
 
     public func add(_ administration: Administration) async throws {
-        let entity = CDAdministration(context: context)
-        entity.fromDomainModel(administration)
+        await context.perform { [weak self] in
+            guard let context = self?.context else { return }
+            let entity = CDAdministration(context: context)
+            entity.fromDomainModel(administration)
+        }
     }
 
     public func findBy(medicationId: MedicationId, and date: Date) async throws -> Administration? {
@@ -28,9 +31,9 @@ public class CoreDataAdministrations: AdministrationRepository {
             endDate! as CVarArg
         )
 
-        guard let managedObject = try context.fetch(request).first else { return nil }
-
-        return try managedObject.toDomainModel()
+        return try await context.perform { [weak self] in
+            try self?.context.fetch(request).first?.toDomainModel()
+        }
     }
 
     public func hasAdministration(on date: Date, for medicationId: MedicationId) async throws -> Bool {
@@ -38,20 +41,19 @@ public class CoreDataAdministrations: AdministrationRepository {
     }
 
     public func remove(_ administration: Administration) async throws {
-        guard let managedObject = try getManagedObjectBy(id: administration.id) else { return }
-        context.delete(managedObject)
+        let request = CDAdministration.fetchRequest()
+        request.fetchLimit = 1
+        request.predicate = NSPredicate(format: "id = %@", administration.id.uuid as CVarArg)
+
+        try await context.perform { [weak self] in
+            guard let managedObject = try self?.context.fetch(request).first else { return }
+            self?.context.delete(managedObject)
+        }
     }
 
     public func save() async throws {
-        try context.save()
-    }
-
-    // MARK: Core Data Funcs
-
-    private func getManagedObjectBy(id: AdministrationId) throws -> CDAdministration? {
-        let request = CDAdministration.fetchRequest()
-        request.fetchLimit = 1
-        request.predicate = NSPredicate(format: "id = %@", id.uuid as CVarArg)
-        return try context.fetch(request).first
+        try await context.perform { [weak self] in
+            try self?.context.save()
+        }
     }
 }

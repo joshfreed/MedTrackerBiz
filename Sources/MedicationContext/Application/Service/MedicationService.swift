@@ -2,18 +2,22 @@ import Foundation
 import Combine
 import JFLib_DomainEvents
 import MTBackEndCore
+import OSLog
 
 public class MedicationService {
     private let medications: MedicationRepository
     private let administrations: AdministrationRepository
+    private let logger: Logger
     private var getTrackedMedicationsSubjects: [DateOnly: CurrentValueSubject<GetTrackedMedicationsResponse?, Error>] = [:]
 
     public init(
         medications: MedicationRepository,
-        administrations: AdministrationRepository
+        administrations: AdministrationRepository,
+        logger: Logger
     ) {
         self.medications = medications
         self.administrations = administrations
+        self.logger = logger
     }
 
     /// Publishes the current value of all `GetTrackedMedicationsContinuousQuery` that have been subscribed
@@ -86,8 +90,11 @@ extension MedicationService {
     }
 
     public func handle(_ query: GetTrackedMedicationsQuery) async throws -> GetTrackedMedicationsResponse {
+        logger.debug("Handling GetTrackedMedicationsQuery \(query.date)")
         let medications = try await medications.getAll()
+        logger.debug("Got all medications")
         let responseMedications = try await map(models: medications, date: query.date)
+        logger.debug("Mapped medications to response")
         return GetTrackedMedicationsResponse(date: query.date, medications: responseMedications)
     }
 
