@@ -1,22 +1,38 @@
 import Foundation
 import UserNotifications
+import MTBackEndCore
+import JFLib_Services
+import OSLog
 
 class LocalNotificationHandler: NSObject, UNUserNotificationCenterDelegate {
+    @Injected private var application: MedTrackerBackEnd
+    
     func register() {
         UNUserNotificationCenter.current().delegate = self
     }
 
-    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         let userInfo = response.notification.request.content.userInfo
 
-        let medicationId = userInfo["medicationId"] as? String
+        guard let medicationId = userInfo["medicationId"] as? String else {
+            completionHandler()
+            return
+        }
 
         switch response.actionIdentifier {
-        case "TAKE_ACTION": break
-        case "SNOOZE_ACTION": break
-        case "YES_ACTION": break
-        case "NO_ACTION": break
-        default: break
+        case "YES_ACTION":
+            Task {
+                do {
+                    try await application.recordAdministration(medicationId: medicationId)
+                } catch {
+                    Logger.localNotifications.error(error)
+                }
+                DispatchQueue.main.async {
+                    completionHandler()
+                }
+            }
+        case "NO_ACTION": completionHandler()
+        default: completionHandler()
         }
     }
 }

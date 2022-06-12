@@ -13,7 +13,7 @@ class LocalNotificationService {
 
 extension LocalNotificationService: NotificationService {
     public func add(notification: ReminderNotification) async throws {
-        logger.debug("Added local notification to trigger at: \(notification.triggerDate)")
+        logger.debug("Added local notification to trigger at: \(notification.triggerDate, privacy: .public)")
         try await UNUserNotificationCenter.current().add(notification.toNotificationRequest())
     }
 

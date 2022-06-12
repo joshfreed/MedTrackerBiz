@@ -40,16 +40,6 @@ public class LocalNotificationModule: MedTrackerModule {
     }
 
     private func configureNotifications() {
-        let takeAction = UNNotificationAction(identifier: "TAKE_ACTION", title: "Take", options: [])
-        let snoozeAction = UNNotificationAction(identifier: "SNOOZE_ACTION", title: "Snooze", options: [])
-        let medicationReminderCategory = UNNotificationCategory(
-            identifier: "MEDICATION_REMINDER",
-            actions: [takeAction, snoozeAction],
-            intentIdentifiers: [],
-            hiddenPreviewsBodyPlaceholder: "",
-            options: .customDismissAction
-        )
-
         let yesAction = UNNotificationAction(identifier: "YES_ACTION", title: "Yes", options: [])
         let noAction = UNNotificationAction(identifier: "NO_ACTION", title: "Not Yet", options: [])
         let medCheckInCategory = UNNotificationCategory(
@@ -61,7 +51,7 @@ public class LocalNotificationModule: MedTrackerModule {
         )
 
         let notificationCenter = UNUserNotificationCenter.current()
-        notificationCenter.setNotificationCategories([medicationReminderCategory, medCheckInCategory])
+        notificationCenter.setNotificationCategories([medCheckInCategory])
     }
 }
 
@@ -69,4 +59,8 @@ extension Logger {
     private static var subsystem = Bundle.main.bundleIdentifier!
 
     static let localNotifications = Logger(subsystem: subsystem, category: "localNotifications")
+
+    func error(_ error: Error) {
+        self.error("\(String(describing: error))")
+    }
 }
